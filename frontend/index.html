@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Project - Make Learning Cool Again!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #ff69b4;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 10px 5px;
+        }
+
+        .input-section {
+            margin: 30px 0;
+        }
+
+        .input-section label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .input-section textarea,
+        .input-section input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .input-section textarea:focus,
+        .input-section input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        .loader.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #999;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Your Project Name</h1>
+            <p>Making Learning Cool Again!</p>
+            <div>
+                <span class="badge">CS Girlies Hackathon 2025</span>
+                <span class="badge">AI-Powered</span>
+            </div>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>🤖 Smart AI</h4>
+                <p>Powered by advanced AI</p>
+            </div>
+            <div class="feature-card">
+                <h4>🎯 Personalized</h4>
+                <p>Tailored to your needs</p>
+            </div>
+            <div class="feature-card">
+                <h4>🚀 Fast</h4>
+                <p>Get results instantly</p>
+            </div>
+            <div class="feature-card">
+                <h4>✨ Easy to Use</h4>
+                <p>Simple and intuitive</p>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <label for="userInput">Enter your learning content:</label>
+            <textarea 
+                id="userInput" 
+                rows="6" 
+                placeholder="Paste your notes, text, or questions here..."></textarea>
+        </div>
+
+        <button class="btn" onclick="processInput()">
+            🚀 Process with AI
+        </button>
+
+        <div class="loader" id="loader"></div>
+
+        <div class="result-section" id="resultSection">
+            <h3>✨ Results:</h3>
+            <div id="results">
+                <!-- Results will appear here -->
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ for CS Girlies November Hackathon 2025</p>
+            <p>Team: [Your Team Name]</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "cs-girlies-hackathon-project",
+  "version": "1.0.0",
+  "description": "CS Girlies November Hackathon 2025 - Make Learning Cool Again!",
+  "main": "frontend/index.html",
+  "scripts": {
+    "start": "cd frontend && python -m http.server 8000",
+    "backend": "cd backend && python app.py",
+    "dev": "concurrently \"npm run backend\" \"npm run start\"",
+    "test": "echo \"Add your tests here\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/your-project.git"
+  },
+  "keywords": [
+    "hackathon",
+    "education",
+    "ai",
+    "edtech",
+    "learning",
+    "csgirlies"
+  ],
+  "author": "Your Team Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
