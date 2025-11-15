@@ -40,7 +40,7 @@ By combining gamification with proven learning strategies, StudyBratz keeps stud
 
 ## 🏆 Hackathon Track
 
-**Primary Track:** [Choose one]
+**Primary Track:** 
 - [ ] 🎮 **Make Learning Fun** - Gamify the learning journey
 
 **Bonus Tracks:** 
