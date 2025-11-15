@@ -142,32 +142,6 @@ Frontend <-> API <-> AI Service <-> Database
 
 ---
 
-## 🎥 Demo Video Script
-
-**[1-5 minutes max]**
-
-### Opening (0:00-0:30)
-- Hook: "What if studying felt like playing your favorite game?"
-- Problem statement
-- Our solution intro
-
-### Demo (0:30-3:30)
-- Show key features in action
-- Walk through user journey
-- Highlight AI/automation
-
-### Impact & Vision (3:30-4:30)
-- Educational impact
-- Future plans
-- Call to action
-
-### Closing (4:30-5:00)
-- Team intro
-- Thank judges
-- End screen with links
-
----
-
 ## 🎨 Design & UX Highlights
 
 - **Clean Interface**: [Describe design philosophy]
@@ -250,7 +224,7 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 - **Hackathon Page**: [CS Girlies November Hackathon](https://csgirlies-nov-hackathon.devpost.com/)
 - **Discord**: [Join the community](https://discord.gg/csgirlies)
-- **Documentation**: [Full docs in /docs folder]
+- **Documentation**: [GitBook Link]
 
 ---
 
