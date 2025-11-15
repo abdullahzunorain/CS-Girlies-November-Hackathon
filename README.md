@@ -41,22 +41,21 @@ By combining gamification with proven learning strategies, StudyBratz keeps stud
 ## 🏆 Hackathon Track
 
 **Primary Track:** [Choose one]
-- [ ] 🤖 **Automate Learning** - Build smarter study tools with AI
 - [ ] 🎮 **Make Learning Fun** - Gamify the learning journey
-- [ ] 🧮 **Build with Wolfram** - Harness computational intelligence
 
 **Bonus Tracks:** 
-- [✅ ] 📚 **Build with GitBook** ($500 prize)
-- [ ] ⚙️ **Built with Cline CLI** ($1,500 prize)
+- [ ] 📚 **Build with GitBook** 
+
 
 ---
 
 ## ✨ Key Features
 
-- **Feature 1:** [Brief description]
-- **Feature 2:** [Brief description]
-- **Feature 3:** [Brief description]
-- **Feature 4:** [Brief description]
+- **AI-Generated Flashcards:** Automatically create Q/A flashcards from user-selected topics or uploaded notes.  
+- **Gamified Study Sessions:** Earn XP and level up by completing study sessions, making learning fun and motivating.  
+- **Study Powers & Techniques:** Unlock proven study methods like Pomodoro, Feynman, Active Recall, and Spaced Repetition.  
+- **Customizable Avatars & Rooms:** Choose Y2K-style Bratz avatars, decorate your virtual room, and unlock outfits and hairstyles as you progress.  
+
 
 ---
 
