@@ -34,9 +34,9 @@ StudyBratz gamifies learning with a Bratz-inspired avatar system:
 - Unlock study powers (Pomodoro, Feynman, Active Recall, Spaced Repetition) and customize your avatar and virtual room  
 
 ### Why This Matters 
-By combining gamification with proven learning strategies, StudyBratz keeps students engaged, helps them retain knowledge more effectively, and makes learning enjoyable for any subject, from Biology to Languages.
--
---
+By combining gamification with proven learning strategies, StudyBratz keeps students engaged, helps them retain knowledge more effectively, and makes learning enjoyable for any subject, from Biology to Languages. 
+
+---
 
 ## 🏆 Hackathon Track
 
