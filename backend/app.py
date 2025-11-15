@@ -1,4 +1,5 @@
 """
+app.py
 Main Flask application for CS Girlies Hackathon project
 Backend API with AI integration, RAG, Flashcards, and XP System
 """
@@ -270,43 +271,83 @@ def analyze_content():
 @app.route('/api/rag/upload', methods=['POST'])
 def upload_document():
     """
-    Upload document for RAG processing
-    Expects: { "content": "text or file content", "filename": "doc.pdf", "user_id": "user123" }
+    Upload PDF file for RAG processing (handles multipart file uploads)
+    Expects: multipart/form-data with 'file' and 'user_id'
     Returns: { "doc_id": "...", "chunks_processed": 10, "xp_data": {...} }
     """
     try:
-        data = request.get_json()
-        
-        if not data or 'content' not in data:
+        # Check if file is in request
+        if 'file' not in request.files:
             return jsonify({
-                'error': 'Missing content field in request'
+                'error': 'No file provided in request'
             }), 400
         
-        content = data['content']
-        filename = data.get('filename', 'untitled.txt')
-        user_id = data.get('user_id', 'default_user')
+        file = request.files['file']
+        user_id = request.form.get('user_id', 'default_user')
+        
+        # Check if file was actually selected
+        if file.filename == '':
+            return jsonify({
+                'error': 'No file selected'
+            }), 400
+        
+        # Validate file type
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({
+                'error': 'Only PDF files are supported'
+            }), 400
         
         # Check if user has unlocked RAG feature
+        # Skipping level check for now - user can upload documents at any level
         user = get_user_progress(user_id)
-        if user['level'] < 3 and 'rag_upload' not in user['unlocked_features']:
-            return jsonify({
-                'error': 'RAG upload feature locked. Reach level 3 to unlock.',
-                'required_level': 3,
-                'current_level': user['level']
-            }), 403
+        # if user['level'] < 3 and 'rag_upload' not in user['unlocked_features']:
+        #     return jsonify({
+        #         'error': 'RAG upload feature locked. Reach level 3 to unlock.',
+        #         'required_level': 3,
+        #         'current_level': user['level']
+        #     }), 403
         
-        # Process document for RAG
-        result = process_document_for_rag(content, filename, user_id)
-        
-        if result.get('status') == 'success':
-            # Award XP for document upload
-            xp_data = award_xp(user_id, 'document_upload', bonus=result.get('chunks_processed', 0) * 2)
-            result['xp_data'] = xp_data
+        # Extract text from PDF
+        try:
+            import PyPDF2
+            from werkzeug.utils import secure_filename
             
-            user['documents_processed'] += 1
-        
-        return jsonify(result), 200
-        
+            # Read PDF content
+            pdf_reader = PyPDF2.PdfReader(file.stream)
+            
+            # Extract text from all pages
+            text_content = ""
+            for page in pdf_reader.pages:
+                page_text = page.extract_text() or ""
+                text_content += page_text + "\n\n"
+            
+            if not text_content.strip():
+                return jsonify({
+                    'error': 'Could not extract text from PDF. The PDF might be image-based or encrypted.'
+                }), 400
+            
+            # Secure the filename
+            filename = secure_filename(file.filename)
+            
+            # Process document for RAG
+            result = process_document_for_rag(text_content, filename, user_id)
+            
+            if result.get('status') == 'success':
+                # Award XP for document upload
+                xp_data = award_xp(user_id, 'document_upload', bonus=result.get('chunks_processed', 0) * 2)
+                result['xp_data'] = xp_data
+                result['pages_processed'] = len(pdf_reader.pages)
+                
+                user['documents_processed'] += 1
+            
+            return jsonify(result), 200
+            
+        except ImportError:
+            return jsonify({
+                'error': 'PyPDF2 not installed. Run: pip install PyPDF2',
+                'suggestion': 'Install with: pip install PyPDF2'
+            }), 500
+            
     except Exception as e:
         return jsonify({
             'error': str(e),

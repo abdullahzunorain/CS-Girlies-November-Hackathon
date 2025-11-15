@@ -1,29 +1,13 @@
-.character-select {
+.technique-select {
   min-height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 40px 20px;
   overflow-y: auto;
-  position: relative;
 }
 
-.character-select::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-}
-
-.character-select-container {
+.technique-select-container {
   max-width: 1200px;
   margin: 0 auto;
-  position: relative;
-  z-index: 1;
 }
 
 .page-title {
@@ -55,22 +39,27 @@
   }
 }
 
-.page-subtitle {
+.character-bonus {
   text-align: center;
   color: #00ffff;
-  font-size: 18px;
-  margin-bottom: 50px;
+  font-size: 16px;
+  margin-bottom: 40px;
   text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
 }
 
-.characters-grid {
+.character-bonus strong {
+  color: #ff00ff;
+}
+
+/* Techniques grid */
+.techniques-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
   margin-bottom: 40px;
 }
 
-.character-card {
+.technique-card {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: 3px solid transparent;
@@ -80,67 +69,97 @@
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.character-card:hover {
+.technique-card:hover:not(.locked) {
   transform: translateY(-8px);
   box-shadow: 0 8px 24px rgba(255, 0, 255, 0.4);
   background: rgba(255, 255, 255, 0.15);
 }
 
-.character-card.selected {
+.technique-card.selected {
+  border-color: #00ffff;
   border-width: 4px;
-  box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
   transform: translateY(-8px) scale(1.02);
 }
 
-.character-avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  margin: 0 auto 20px;
+.technique-card.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.technique-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+.technique-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: white;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+  line-height: 1.4;
+}
+
+.technique-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+/* Character bonus badge */
+.character-bonus-badge {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000;
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: bold;
+  margin-top: 10px;
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0%, 100% { 
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  }
+}
+
+/* Lock overlay */
+.lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  border: 3px solid rgba(255, 255, 255, 0.3);
-}
-
-.character-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-}
-
-.character-name {
-  font-family: 'Press Start 2P', monospace;
   font-size: 16px;
-  color: white;
-  margin-bottom: 10px;
-  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
-}
-
-.character-style {
-  font-family: 'Comic Sans MS', cursive;
-  font-size: 14px;
-  color: #00ffff;
-  margin-bottom: 15px;
   font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.8);
 }
 
-.character-description {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.6;
-}
-
+/* Selected badge */
 .selected-badge {
   position: absolute;
   top: 15px;
   right: 15px;
-  background: hsl(254, 100%, 71%);
+  background: #00ff00;
   color: #000;
   padding: 5px 12px;
   border-radius: 15px;
@@ -154,6 +173,7 @@
   50% { transform: scale(1.1); }
 }
 
+/* Buttons */
 .continue-button,
 .back-button {
   display: block;
@@ -169,7 +189,7 @@
 }
 
 .continue-button {
-  background: linear-gradient(135deg, #3b7c3b 0%, #00ffff 100%);
+  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
   color: #000;
   box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
 }
@@ -197,16 +217,26 @@
   transform: translateY(-2px);
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .page-title {
     font-size: 24px;
   }
   
-  .characters-grid {
+  .techniques-grid {
     grid-template-columns: 1fr;
   }
   
-  .character-card {
+  .technique-card {
     padding: 20px;
+    min-height: 200px;
+  }
+  
+  .technique-icon {
+    font-size: 48px;
+  }
+  
+  .technique-name {
+    font-size: 12px;
   }
 }

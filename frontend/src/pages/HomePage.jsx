@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
+import bg2 from '../assets/images/bg2.jpg';
+import title1 from '../assets/images/title1.png';
 
 /**
  * Landing Page - First thing users see
@@ -15,15 +17,10 @@ const HomePage = () => {
   };
 
   return (
-    <div className="homepage">
+    <div className="homepage" style={{ backgroundImage: `url(${bg2})` }}>
       <div className="homepage-content">
-        {/* Sparkles decoration */}
-        <div className="sparkles-top">✨⭐💫✨⭐💫✨</div>
-
         {/* Main title */}
-        <h1 className="homepage-title">
-          Y2K Study RPG
-        </h1>
+        <img src={title1} alt="Y2K Study RPG" className="homepage-title-img" />
 
         {/* Subtitle */}
         <p className="homepage-subtitle">
@@ -42,9 +39,6 @@ const HomePage = () => {
         <button className="start-button" onClick={handleStartStudying}>
           Start Studying! 🚀
         </button>
-
-        {/* Bottom decoration */}
-        <div className="sparkles-bottom">⭐💫✨⭐💫✨⭐</div>
 
         {/* Feature badges */}
         <div className="feature-badges">
