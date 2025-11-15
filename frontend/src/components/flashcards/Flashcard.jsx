@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Flashcard.css';
 
 /**
@@ -13,6 +13,12 @@ import './Flashcard.css';
 const Flashcard = ({ question, answer, onCorrect, onIncorrect, cardNumber, totalCards }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
+
+  // Reset state when question changes
+  useEffect(() => {
+    setIsFlipped(false);
+    setIsAnswered(false);
+  }, [question, answer]);
 
   const handleFlip = () => {
     if (!isAnswered) {

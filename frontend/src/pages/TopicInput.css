@@ -1,0 +1,263 @@
+.topic-input {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.topic-input-container {
+  max-width: 700px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 50px 40px;
+  border-radius: 30px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(255, 0, 255, 0.3);
+}
+
+.character-greeting {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.character-mini-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.character-greeting p {
+  color: white;
+  margin: 0;
+  font-size: 16px;
+}
+
+.character-greeting strong {
+  color: #00ffff;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.page-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 28px;
+  color: white;
+  text-align: center;
+  text-shadow: 
+    0 0 10px #ff00ff,
+    0 0 20px #00ffff,
+    4px 4px 0 rgba(0, 0, 0, 0.5);
+  margin-bottom: 15px;
+}
+
+.page-subtitle {
+  text-align: center;
+  color: #00ffff;
+  font-size: 16px;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+.input-section {
+  margin-bottom: 30px;
+}
+
+.input-group {
+  margin-bottom: 30px;
+}
+
+.input-group label {
+  display: block;
+  color: white;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+.topic-input-field {
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 18px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  font-family: 'Comic Sans MS', cursive;
+  transition: all 0.3s ease;
+}
+
+.topic-input-field:focus {
+  outline: none;
+  border-color: #00ffff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.topic-input-field::placeholder {
+  color: #999;
+}
+
+.card-count-selector {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.count-option {
+  flex: 1;
+  padding: 15px;
+  font-size: 20px;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.count-option:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.count-option.selected {
+  background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%);
+  border-color: white;
+  box-shadow: 0 4px 16px rgba(255, 0, 255, 0.5);
+}
+
+.count-option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.suggestions {
+  margin-top: 30px;
+}
+
+.suggestions-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.suggestion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.suggestion-chip {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.suggestion-chip:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.suggestion-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.generate-button {
+  width: 100%;
+  padding: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Comic Sans MS', cursive;
+  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 255, 255, 0.4);
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.generate-button:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 255, 255, 0.6);
+}
+
+.generate-button:disabled {
+  background: #666;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.back-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.back-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .topic-input-container {
+    padding: 30px 20px;
+  }
+  
+  .page-title {
+    font-size: 20px;
+  }
+  
+  .card-count-selector {
+    flex-wrap: wrap;
+  }
+  
+  .count-option {
+    flex-basis: calc(50% - 7.5px);
+  }
+}

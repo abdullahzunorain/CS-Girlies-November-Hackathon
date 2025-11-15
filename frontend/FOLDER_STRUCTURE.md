@@ -45,12 +45,14 @@ src/
 ## 🎯 Team Responsibilities by Folder
 
 ### Person 3 (Character/Y2K UI)
+
 - `components/character/` - All character-related components
 - `components/shared/` - Reusable UI components with Y2K styling
 - `styles/` - The entire Y2K theme system
 - `assets/images/` - Character sprites and backgrounds
 
 ### Person 4 (Flashcards/Study Flow) - **YOU**
+
 - `components/flashcards/` - Flashcard component with flip animations
 - `components/study/` - Study session container, progress bars, timer
 - `components/levelup/` - Level up celebration screen
@@ -58,11 +60,13 @@ src/
 - `hooks/useFlashcards.js` - Flashcard state and progression
 
 ### Person 5 (All-Rounder)
+
 - `services/` - Connect frontend to backend APIs
 - `pages/` - Wire up all components into complete pages
 - Help Person 3 & 4 integrate their work
 
 ### Integration Points
+
 - `hooks/useXP.js` - Connects to Person 2's backend XP system
 - `services/flashcardService.js` - Connects to Person 1's RAG API
 - `services/progressService.js` - Tracks study progress
@@ -70,14 +74,13 @@ src/
 ## 🚀 Getting Started
 
 1. **Install dependencies:**
+
 ```bash
 npm install framer-motion react-confetti
 ```
 
 2. **Start dev server:**
+
 ```bash
 npm start
 ```
-
-3. **Your first task (Person 4):**
-Create `components/flashcards/Flashcard.jsx`
