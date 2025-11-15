@@ -27,22 +27,22 @@ Students often struggle with staying motivated and engaged while studying:
 - Current learning apps lack gamification and personalization  
 
 
-### Our Solution
+### Our Solution 
 StudyBratz gamifies learning with a Bratz-inspired avatar system:  
 - AI generates flashcards from user-selected topics or uploaded notes  
 - Students earn XP and level up by completing study sessions  
 - Unlock study powers (Pomodoro, Feynman, Active Recall, Spaced Repetition) and customize your avatar and virtual room  
 
-### Why This Matters
-
+### Why This Matters 
 By combining gamification with proven learning strategies, StudyBratz keeps students engaged, helps them retain knowledge more effectively, and makes learning enjoyable for any subject, from Biology to Languages.
----
+-
+--
 
 ## 🏆 Hackathon Track
 
 **Primary Track:** [Choose one]
 - [ ] 🤖 **Automate Learning** - Build smarter study tools with AI
-- [✅] 🎮 **Make Learning Fun** - Gamify the learning journey
+- [ ] 🎮 **Make Learning Fun** - Gamify the learning journey
 - [ ] 🧮 **Build with Wolfram** - Harness computational intelligence
 
 **Bonus Tracks:** 
