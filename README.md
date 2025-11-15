@@ -36,7 +36,7 @@ StudyBratz gamifies learning with a Bratz-inspired avatar system:
 ### Why This Matters 
 By combining gamification with proven learning strategies, StudyBratz keeps students engaged, helps them retain knowledge more effectively, and makes learning enjoyable for any subject, from Biology to Languages. 
 
--
+---
 
 ## 🏆 Hackathon Track
 
