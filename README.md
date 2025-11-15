@@ -34,6 +34,7 @@ StudyBratz gamifies learning with a Bratz-inspired avatar system:
 - Unlock study powers (Pomodoro, Feynman, Active Recall, Spaced Repetition) and customize your avatar and virtual room  
 
 ### Why This Matters
+
 By combining gamification with proven learning strategies, StudyBratz keeps students engaged, helps them retain knowledge more effectively, and makes learning enjoyable for any subject, from Biology to Languages.
 ---
 
@@ -41,11 +42,11 @@ By combining gamification with proven learning strategies, StudyBratz keeps stud
 
 **Primary Track:** [Choose one]
 - [ ] 🤖 **Automate Learning** - Build smarter study tools with AI
-- [ ] 🎮 **Make Learning Fun** - Gamify the learning journey
+- [✅] 🎮 **Make Learning Fun** - Gamify the learning journey
 - [ ] 🧮 **Build with Wolfram** - Harness computational intelligence
 
-**Bonus Tracks:** [Optional - for extra prizes]
-- [ ] 📚 **Build with GitBook** ($500 prize)
+**Bonus Tracks:** 
+- [✅ ] 📚 **Build with GitBook** ($500 prize)
 - [ ] ⚙️ **Built with Cline CLI** ($1,500 prize)
 
 ---
