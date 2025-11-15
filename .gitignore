@@ -24,6 +24,8 @@ wheels/
 
 # Virtual environments
 venv/
+.venv/
+.vscode/
 env/
 ENV/
 env.bak/

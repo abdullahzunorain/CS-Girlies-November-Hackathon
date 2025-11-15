@@ -1,43 +1,48 @@
 # Python dependencies for CS Girlies Hackathon project
 
-# Web Framework
-Flask==3.0.0
-flask-cors==4.0.0
+# Core Web Framework
+flask>=3.0.0
+flask-cors>=4.0.0
 
 # Environment variables
 python-dotenv==1.0.0
 
 # AI/ML Services
-openai==1.3.0              # For OpenAI GPT and Embeddings
-# google-generativeai      # For Google Gemini (alternative)
-# anthropic                # For Claude (alternative)
+openai==1.3.0              # OpenAI GPT + Embeddings
 
-# Vector Operations & Embeddings
-numpy==1.24.3              # For numerical operations and vector math
+# Vector & Math
+numpy                      # Numerical operations & cosine similarity
 
-# Data processing
+# HTTP / Requests
 requests==2.31.0
 
-# Optional: Advanced Vector DB (uncomment if needed)
-# pinecone-client          # For Pinecone vector DB
-# chromadb                 # For Chroma vector DB
-# weaviate-client          # For Weaviate vector DB
-# qdrant-client            # For Qdrant vector DB
+# PDF Support (for RAG ingestion)
+PyPDF2>=3.0.0
 
-# Optional: Document Processing (for PDF/DOCX support)
-# PyPDF2                   # For PDF parsing
-# python-docx              # For DOCX parsing
-# pdfplumber               # Alternative PDF parser
+# Groq client for OSS model usage
+groq
 
-# Optional: Enhanced Text Processing
-# nltk                     # Natural Language Toolkit
-# spacy                    # Advanced NLP
-# sentence-transformers    # For better embeddings
+# Production server (optional for deployment)
+gunicorn==21.2.0
 
-# Utilities
-gunicorn==21.2.0          # For production deployment
+# (Optional / Uncomment when needed)
+# google-generativeai      # Gemini alternative
+# anthropic                 # Claude alternative
+# python-docx>=1.0.0        # DOCX support
+# pdfplumber                # Alternative PDF parsing
+# pinecone-client           # Pinecone vector DB
+# chromadb                  # Chroma vector DB
+# weaviate-client           # Weaviate vector DB
+# qdrant-client             # Qdrant vector DB
+# sentence-transformers     # Advanced embeddings
+# nltk                      # NLP utilities
+# spacy                     # Advanced NLP
 
-# Development & Testing (optional)
-# pytest                   # For testing
-# black                    # For code formatting
-# flake8                   # For linting
+# Dev / Testing (optional)
+# pytest
+# black
+# flake8
+
+
+
+
