@@ -12,25 +12,29 @@
 - **Live Demo**: [Add Deployed Link]
 - **DevPost Submission**: [Add Link]
 - **Discord**: [CS Girlies Discord](https://discord.gg/csgirlies)
+- **GitBook**:[GitBook link] (to add later)
 
 ---
 
 ## 🎯 Project Overview
 
-**One-line pitch:** [e.g., "An AI-powered study companion that turns boring notes into interactive quizzes and tracks your learning progress"]
+Turn studying into a fun, Y2K-inspired game where AI-generated flashcards, XP, and customizable avatars make learning addictive and effective.
 
 ### The Problem
-[Describe the learning challenge you're solving. Be specific!]
-- Students struggle with X
-- Traditional learning tools don't address Y
-- There's no easy way to Z
+Students often struggle with staying motivated and engaged while studying:  
+- Traditional study methods feel boring and repetitive  
+- It’s hard to track progress and measure improvement  
+- Current learning apps lack gamification and personalization  
+
 
 ### Our Solution
-[Explain your approach in 2-3 sentences]
+StudyBratz gamifies learning with a Bratz-inspired avatar system:  
+- AI generates flashcards from user-selected topics or uploaded notes  
+- Students earn XP and level up by completing study sessions  
+- Unlock study powers (Pomodoro, Feynman, Active Recall, Spaced Repetition) and customize your avatar and virtual room  
 
 ### Why This Matters
-[Connect to real educational impact - judges care about this!]
-
+By combining gamification with proven learning strategies, StudyBratz keeps students engaged, helps them retain knowledge more effectively, and makes learning enjoyable for any subject, from Biology to Languages.
 ---
 
 ## 🏆 Hackathon Track
