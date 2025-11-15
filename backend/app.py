@@ -314,6 +314,164 @@ def upload_document():
         }), 500
 
 
+@app.route('/api/rag/upload-pdf', methods=['POST'])
+def upload_pdf_from_path():
+    """
+    Load and process a PDF file from local path for RAG
+    Expects: { "pdf_path": "C:\\path\\to\\file.pdf", "user_id": "user123" }
+    Returns: { "doc_id": "...", "chunks_processed": 10, "xp_data": {...} }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'pdf_path' not in data:
+            return jsonify({
+                'error': 'Missing pdf_path field in request'
+            }), 400
+        
+        pdf_path = data['pdf_path']
+        user_id = data.get('user_id', 'default_user')
+        
+        # Check if file exists
+        if not os.path.exists(pdf_path):
+            return jsonify({
+                'error': f'File not found: {pdf_path}'
+            }), 404
+        
+        # Check if user has unlocked RAG feature
+        user = get_user_progress(user_id)
+        if user['level'] < 3 and 'rag_upload' not in user['unlocked_features']:
+            return jsonify({
+                'error': 'RAG upload feature locked. Reach level 3 to unlock.',
+                'required_level': 3,
+                'current_level': user['level']
+            }), 403
+        
+        # Try to extract text from PDF
+        try:
+            import PyPDF2
+            
+            with open(pdf_path, 'rb') as pdf_file:
+                pdf_reader = PyPDF2.PdfReader(pdf_file)
+                
+                # Extract text from all pages
+                text_content = ""
+                for page in pdf_reader.pages:
+                    page_text = page.extract_text() or ""
+                    text_content += page_text + "\n\n"
+                
+                if not text_content.strip():
+                    return jsonify({
+                        'error': 'Could not extract text from PDF. The PDF might be image-based or encrypted.'
+                    }), 400
+                
+                filename = os.path.basename(pdf_path)
+                
+                # Process document for RAG
+                result = process_document_for_rag(text_content, filename, user_id)
+                
+                if result.get('status') == 'success':
+                    # Award XP for document upload
+                    xp_data = award_xp(user_id, 'document_upload', bonus=result.get('chunks_processed', 0) * 2)
+                    result['xp_data'] = xp_data
+                    result['pages_processed'] = len(pdf_reader.pages)
+                    
+                    user['documents_processed'] += 1
+                
+                return jsonify(result), 200
+                
+        except ImportError:
+            return jsonify({
+                'error': 'PyPDF2 not installed. Run: pip install PyPDF2',
+                'suggestion': 'Or send PDF content as text using /api/rag/upload endpoint'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'status': 'failed'
+        }), 500
+
+
+@app.route('/api/rag/load-smol-training', methods=['POST'])
+def load_smol_training_pdf():
+    """
+    Load the specific Smol Training PDF for RAG
+    Expects: { "user_id": "user123" }
+    Returns: { "doc_id": "...", "chunks_processed": 10, "xp_data": {...} }
+    """
+    try:
+        data = request.get_json(silent=True) or {}
+        user_id = data.get('user_id', 'default_user')
+        
+        # Hardcoded path to the PDF (provided by user)
+        pdf_path = r"C:\Users\lenovo\Desktop\the-smol-training-playbook-the-secrets-to-building-world-class-llms.pdf"
+        
+        # Check if file exists
+        if not os.path.exists(pdf_path):
+            return jsonify({
+                'error': f'Smol Training PDF not found at: {pdf_path}',
+                'suggestion': 'Please verify the file path or use /api/rag/upload-pdf with a custom path.'
+            }), 404
+        
+        # Check if user has unlocked RAG feature
+        user = get_user_progress(user_id)
+        if user['level'] < 3 and 'rag_upload' not in user['unlocked_features']:
+            return jsonify({
+                'error': 'RAG upload feature locked. Reach level 3 to unlock.',
+                'required_level': 3,
+                'current_level': user['level']
+            }), 403
+        
+        # Try to extract text from PDF
+        try:
+            import PyPDF2
+            
+            with open(pdf_path, 'rb') as pdf_file:
+                pdf_reader = PyPDF2.PdfReader(pdf_file)
+                
+                # Extract text from all pages with simple page markers
+                text_content = ""
+                total_pages = len(pdf_reader.pages)
+                for i, page in enumerate(pdf_reader.pages, start=1):
+                    page_text = page.extract_text() or ""
+                    text_content += f"\n\n=== Page {i}/{total_pages} ===\n\n" + page_text
+                
+                if not text_content.strip():
+                    return jsonify({
+                        'error': 'Could not extract text from PDF. The PDF might be image-based or encrypted.'
+                    }), 400
+                
+                filename = os.path.basename(pdf_path)
+                
+                # Process document for RAG
+                result = process_document_for_rag(text_content, filename, user_id)
+                
+                if result.get('status') == 'success':
+                    # Award XP for document upload
+                    xp_data = award_xp(user_id, 'document_upload', bonus=result.get('chunks_processed', 0) * 2)
+                    result['xp_data'] = xp_data
+                    result['pages_processed'] = total_pages
+                    result['total_characters'] = len(text_content)
+                    result['document_name'] = 'Smol Training Playbook - Secrets to Building World-Class LLMs'
+                    
+                    user['documents_processed'] += 1
+                
+                return jsonify(result), 200
+                
+        except ImportError:
+            return jsonify({
+                'error': 'PyPDF2 not installed. Run: pip install PyPDF2',
+                'suggestion': 'Install with: pip install PyPDF2'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'status': 'failed'
+        }), 500
+
+
 @app.route('/api/rag/query', methods=['POST'])
 def query_rag():
     """

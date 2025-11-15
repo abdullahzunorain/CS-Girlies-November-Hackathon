@@ -1,8 +1,8 @@
 # Python dependencies for CS Girlies Hackathon project
 
-# Web Framework
-Flask==3.0.0
-flask-cors==4.0.0
+# Core Web Framework
+flask>=3.0.0
+flask-cors>=4.0.0
 
 # Environment variables
 python-dotenv==1.0.0
@@ -12,11 +12,12 @@ python-dotenv==1.0.0
 google-generativeai      # For Google Gemini (alternative)
 langchain
 # anthropic                # For Claude (alternative)
+openai==1.3.0              # OpenAI GPT + Embeddings
 
-# Vector Operations & Embeddings
-numpy==1.24.3              # For numerical operations and vector math
+# Vector & Math
+numpy                      # Numerical operations & cosine similarity
 
-# Data processing
+# HTTP / Requests
 requests==2.31.0
 
 # Optional: Advanced Vector DB (uncomment if needed)
@@ -42,3 +43,33 @@ gunicorn==21.2.0          # For production deployment
 # pytest                   # For testing
 # black                    # For code formatting
 # flake8                   # For linting
+# PDF Support (for RAG ingestion)
+PyPDF2>=3.0.0
+
+# Groq client for OSS model usage
+groq
+
+# Production server (optional for deployment)
+gunicorn==21.2.0
+
+# (Optional / Uncomment when needed)
+# google-generativeai      # Gemini alternative
+# anthropic                 # Claude alternative
+# python-docx>=1.0.0        # DOCX support
+# pdfplumber                # Alternative PDF parsing
+# pinecone-client           # Pinecone vector DB
+# chromadb                  # Chroma vector DB
+# weaviate-client           # Weaviate vector DB
+# qdrant-client             # Qdrant vector DB
+# sentence-transformers     # Advanced embeddings
+# nltk                      # NLP utilities
+# spacy                     # Advanced NLP
+
+# Dev / Testing (optional)
+# pytest
+# black
+# flake8
+
+
+
+

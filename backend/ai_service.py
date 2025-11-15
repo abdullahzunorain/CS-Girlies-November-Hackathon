@@ -7,22 +7,39 @@ Includes RAG System with Vector Database for document processing
 import os
 import json
 import hashlib
-import numpy as np
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 from dotenv import load_dotenv
 from datetime import datetime
 import re
 
+# Groq client (using Groq instead of OpenAI per user request)
+try:
+    from groq import Groq
+    GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+    if GROQ_API_KEY:
+        groq_client = Groq(api_key=GROQ_API_KEY)
+        GROQ_AVAILABLE = True
+    else:
+        groq_client = None
+        GROQ_AVAILABLE = False
+except ImportError:
+    groq_client = None
+    GROQ_AVAILABLE = False
+    print("⚠️  Groq library not installed. Run: pip install groq")
+
+# NumPy import with error handling
+try:
+    import numpy as np
+    NUMPY_AVAILABLE = True
+except ImportError:
+    np = None  # type: ignore
+    NUMPY_AVAILABLE = False
+    print("⚠️  NumPy not installed. Run: pip install numpy")
+
 load_dotenv()
 
-# AI Service Configuration
-try:
-    from openai import OpenAI
-    client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-    OPENAI_AVAILABLE = True
-except ImportError:
-    OPENAI_AVAILABLE = False
-    print("⚠️  OpenAI not installed. Run: pip install openai")
+# Previous OpenAI configuration removed; using Groq exclusively now.
+OPENAI_AVAILABLE = False  # Explicitly disable OpenAI usage
 
 # Vector Database Storage (in-memory for MVP - use Pinecone/Weaviate/Chroma in production)
 vector_store = {}  # Format: {user_id: {"documents": [], "embeddings": [], "metadata": []}}
@@ -70,44 +87,43 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]
     
     return chunks
 
-def get_embedding(text: str, model: str = "text-embedding-3-small") -> List[float]:
-    """
-    Generate embedding for text using OpenAI
-    
-    Args:
-        text: Input text
-        model: Embedding model to use
-        
-    Returns:
-        List of floats representing the embedding
-    """
-    if not OPENAI_AVAILABLE:
-        # Return random embedding for testing without API
-        return np.random.rand(1536).tolist()
-    
-    try:
-        response = client.embeddings.create(
-            input=text,
-            model=model
-        )
-        return response.data[0].embedding
-    except Exception as e:
-        print(f"Error generating embedding: {e}")
-        return np.random.rand(1536).tolist()
+def get_embedding(text: str, model: str = "deterministic-hash-embedding") -> List[float]:
+    """Deterministic embedding fallback (hash-based) since Groq model used for chat only."""
+    # Use SHA256 digest expanded to fixed-length vector
+    digest = hashlib.sha256(text.encode('utf-8')).digest()
+    # Repeat digest to reach desired length (256 dims)
+    raw = digest * (256 // len(digest) + 1)
+    vec_bytes = raw[:256]
+    # Convert bytes to floats between 0 and 1
+    embedding = [b / 255.0 for b in vec_bytes]
+    return embedding
 
 def cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
     """Calculate cosine similarity between two vectors"""
-    vec1 = np.array(vec1)
-    vec2 = np.array(vec2)
-    
-    dot_product = np.dot(vec1, vec2)
-    norm1 = np.linalg.norm(vec1)
-    norm2 = np.linalg.norm(vec2)
-    
-    if norm1 == 0 or norm2 == 0:
-        return 0.0
-    
-    return float(dot_product / (norm1 * norm2))
+    if NUMPY_AVAILABLE and np is not None:
+        vec1_arr = np.array(vec1)
+        vec2_arr = np.array(vec2)
+        
+        dot_product = np.dot(vec1_arr, vec2_arr)
+        norm1 = np.linalg.norm(vec1_arr)
+        norm2 = np.linalg.norm(vec2_arr)
+        
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
+        
+        return float(dot_product / (norm1 * norm2))
+    else:
+        # Fallback implementation without numpy
+        import math
+        
+        dot_product = sum(a * b for a, b in zip(vec1, vec2))
+        norm1 = math.sqrt(sum(a * a for a in vec1))
+        norm2 = math.sqrt(sum(b * b for b in vec2))
+        
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
+        
+        return float(dot_product / (norm1 * norm2))
 
 def retrieve_relevant_chunks(query: str, user_id: str, top_k: int = 3) -> List[Dict]:
     """
@@ -145,11 +161,13 @@ def retrieve_relevant_chunks(query: str, user_id: str, top_k: int = 3) -> List[D
     return similarities[:top_k]
 
 class AIService:
-    """AI Service for processing educational content with RAG support"""
+    """AI Service for processing educational content with RAG support (Groq)"""
     
     def __init__(self):
-        self.model = "gpt-3.5-turbo"  # or "gpt-4" for better results
-        self.embedding_model = "text-embedding-3-small"
+        # Use Groq OSS model as requested
+        self.model = "openai/gpt-oss-20b"
+        # Embeddings: Groq does not expose this model for embeddings; using deterministic hash fallback
+        self.embedding_model = "deterministic-hash-embedding"
         
     def process_with_ai(self, text: str, task: str = "general") -> Dict:
         """
@@ -162,10 +180,10 @@ class AIService:
         Returns:
             Dict with processed results
         """
-        if not OPENAI_AVAILABLE:
+        if not GROQ_AVAILABLE or groq_client is None:
             return {
-                'error': 'AI service not configured',
-                'suggestion': 'Install openai: pip install openai'
+                'error': 'Groq service not configured',
+                'suggestion': 'Install groq: pip install groq and set GROQ_API_KEY in .env'
             }
         
         try:
@@ -178,18 +196,21 @@ class AIService:
             
             prompt = prompts.get(task, prompts['general'])
             
-            response = client.chat.completions.create(
+            response = groq_client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are a helpful educational AI assistant."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
-                max_tokens=500
+                max_completion_tokens=800,
+                top_p=1,
+                reasoning_effort="medium",
+                stream=False
             )
-            
+            content = response.choices[0].message.content
             return {
-                'result': response.choices[0].message.content,
+                'result': content,
                 'task': task,
                 'status': 'success'
             }
@@ -224,17 +245,25 @@ class AIService:
             
             IMPORTANT: Return ONLY the JSON array, no other text."""
             
-            response = client.chat.completions.create(
+            if not GROQ_AVAILABLE or groq_client is None:
+                return {'status': 'failed', 'error': 'Groq client unavailable'}
+            response = groq_client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are an expert quiz generator. Always respond with valid JSON only."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
-                max_tokens=1500
+                max_completion_tokens=1200,
+                top_p=1,
+                reasoning_effort="medium",
+                stream=False
             )
             
-            quiz_text = response.choices[0].message.content.strip()
+            quiz_text = response.choices[0].message.content
+            if quiz_text is None:
+                quiz_text = ""
+            quiz_text = quiz_text.strip()
             
             # Try to parse JSON
             try:
@@ -278,17 +307,25 @@ class AIService:
             
             IMPORTANT: Return ONLY the JSON array, no other text."""
             
-            response = client.chat.completions.create(
+            if not GROQ_AVAILABLE or groq_client is None:
+                return {'status': 'failed', 'error': 'Groq client unavailable'}
+            response = groq_client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are an expert flashcard creator. Always respond with valid JSON only."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
-                max_tokens=1000
+                max_completion_tokens=900,
+                top_p=1,
+                reasoning_effort="medium",
+                stream=False
             )
             
-            flashcards_text = response.choices[0].message.content.strip()
+            flashcards_text = response.choices[0].message.content
+            if flashcards_text is None:
+                flashcards_text = ""
+            flashcards_text = flashcards_text.strip()
             
             # Try to parse JSON
             try:
@@ -329,17 +366,25 @@ class AIService:
             
             IMPORTANT: Return ONLY valid JSON, no other text."""
             
-            response = client.chat.completions.create(
+            if not GROQ_AVAILABLE or groq_client is None:
+                return {'status': 'failed', 'error': 'Groq client unavailable'}
+            response = groq_client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are an educational content analyst. Always respond with valid JSON only."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.5,
-                max_tokens=500
+                max_completion_tokens=600,
+                top_p=1,
+                reasoning_effort="medium",
+                stream=False
             )
             
-            analysis_text = response.choices[0].message.content.strip()
+            analysis_text = response.choices[0].message.content
+            if analysis_text is None:
+                analysis_text = ""
+            analysis_text = analysis_text.strip()
             
             try:
                 analysis_data = json.loads(analysis_text)
@@ -466,16 +511,20 @@ class AIService:
             
             Provide a clear, concise answer and cite which sources you used."""
             
-            response = client.chat.completions.create(
+            if not GROQ_AVAILABLE or groq_client is None:
+                return {'status': 'failed', 'error': 'Groq client unavailable'}
+            response = groq_client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are a helpful AI assistant that answers questions based on provided context. Always cite your sources."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
-                max_tokens=500
+                max_completion_tokens=700,
+                top_p=1,
+                reasoning_effort="medium",
+                stream=False
             )
-            
             answer = response.choices[0].message.content
             
             # Prepare sources information
