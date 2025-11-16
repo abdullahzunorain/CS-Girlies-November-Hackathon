@@ -68,10 +68,16 @@ const Flashcard = ({
       {/* Answer buttons (only show when flipped) */}
       {isFlipped && !isAnswered && (
         <div className="answer-buttons" onClick={(e) => e.stopPropagation()}>
-          <button className="btn-incorrect" onClick={(e) => handleAnswer(false, e)}>
+          <button
+            className="btn-incorrect"
+            onClick={(e) => handleAnswer(false, e)}
+          >
             Need to Review 😅
           </button>
-          <button className="btn-correct" onClick={(e) => handleAnswer(true, e)}>
+          <button
+            className="btn-correct"
+            onClick={(e) => handleAnswer(true, e)}
+          >
             Got It! ⭐
           </button>
         </div>

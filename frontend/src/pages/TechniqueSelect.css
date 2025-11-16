@@ -1,9 +1,23 @@
 .technique-select {
   min-height: 100vh;
-  background-image: var(--theme-gradient);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   position: relative;
   padding: 40px 20px;
   overflow-y: auto;
+}
+
+.technique-select::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Top-right stats box */
@@ -39,6 +53,8 @@
 .technique-select-container {
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .page-title {
@@ -86,8 +102,7 @@
 .techniques-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-  margin-bottom: 40px;
+  gap: 20px;
 }
 
 .technique-card {
@@ -346,7 +361,7 @@
 .mini-avatar {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: 100%;
   overflow: hidden;
   border: 3px solid white;
   flex-shrink: 0;

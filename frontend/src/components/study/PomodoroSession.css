@@ -1,46 +1,140 @@
 .pomodoro-session {
-  position: relative;
   min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
-.pomodoro-timer {
+.pomodoro-session::before {
+  content: '';
   position: fixed;
-  top: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-  padding: 20px;
-  border-radius: 20px;
-  text-align: center;
-  z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.timer-display {
-  color: #00ffff;
-  font-size: 14px;
+.pomodoro-main-screen {
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Large Timer Display */
+.pomodoro-timer-large {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 30px;
+  padding: 40px;
+  text-align: center;
+  margin-bottom: 40px;
+  box-shadow: 0 8px 32px rgba(255, 0, 255, 0.3);
+}
+
+.timer-header h1 {
+  font-family: 'Galindo', cursive;
+  font-size: 36px;
+  color: white;
+  text-shadow:
+    0 0 10px #ffbff2,
+    0 0 20px #98abe2,
+    4px 4px 0 rgba(0, 0, 0, 0.5);
   margin-bottom: 10px;
 }
 
-.timer-countdown {
+.pomodoros-completed {
+  color: #ffbff2;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.timer-countdown-large {
   color: white;
-  font-size: 32px;
+  font-size: 96px;
   font-weight: bold;
   font-family: 'Galindo', cursive;
-  margin-bottom: 15px;
+  margin: 30px 0;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.timer-controls {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.timer-toggle,
+.timer-reset {
+  padding: 15px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Josefin Sans', sans-serif;
 }
 
 .timer-toggle {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
-  border: none;
-  border-radius: 15px;
-  font-weight: bold;
-  cursor: pointer;
+  background: linear-gradient(135deg, #accf5a 0%, #00ffff 100%);
+  color: #000;
+  box-shadow: 0 4px 16px rgba(0, 255, 255, 0.4);
 }
 
+.timer-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 255, 255, 0.6);
+}
+
+.timer-reset {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.timer-reset:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.finish-session-btn {
+  display: block;
+  width: 100%;
+  padding: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Josefin Sans', sans-serif;
+  background: linear-gradient(135deg, #ffbff2 0%, #accf5a 100%);
+  color: #30488f;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 255, 255, 0.4);
+  transition: all 0.3s ease;
+  margin-top: 40px;
+}
+
+.finish-session-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 255, 255, 0.6);
+}
+
+/* Break Screen */
 .break-screen {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,13 +142,36 @@
   background: linear-gradient(135deg, #4a148c 0%, #880e4f 100%);
   color: white;
   text-align: center;
+  padding: 40px 20px;
 }
 
 .break-screen h1 {
+  font-family: 'Galindo', cursive;
   font-size: 48px;
   margin-bottom: 20px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
 }
 
 .break-screen p {
   font-size: 24px;
+  margin-bottom: 40px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .timer-countdown-large {
+    font-size: 64px;
+  }
+
+  .timer-header h1 {
+    font-size: 24px;
+  }
+
+  .pomodoro-timer-large {
+    padding: 20px;
+  }
+
+  .timer-controls {
+    flex-direction: column;
+  }
 }

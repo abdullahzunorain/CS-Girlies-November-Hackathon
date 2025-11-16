@@ -491,43 +491,24 @@ export const calculateXPWithBonus = (baseXP, techniqueId) => {
 };
 
 /**
- * Get character-specific background for study techniques
- * Shows character background only when using their specialty technique
+ * Get background image based on study technique
+ * Returns the appropriate character background for each technique
  */
 export const getCharacterTechniqueBackground = (characterName, technique) => {
-  // Map character names to their specialties and backgrounds
-  const characterData = {
-    Yasmin: {
-      specialties: ["flashcards", "mind-mapping"],
-      background: require("../assets/images/yasmin.jpg"),
-    },
-    Jade: {
-      specialties: ["pomodoro", "spaced-repetition"],
-      background: require("../assets/images/jade.jpg"),
-    },
-    Sasha: {
-      specialties: ["multiple-choice", "active-recall"],
-      background: require("../assets/images/sasha.jpg"),
-    },
-    Cloe: {
-      specialties: ["feynman", "study-buddy"],
-      background: require("../assets/images/cloe.jpg"),
-    },
+  // Map techniques to character backgrounds (regardless of selected character)
+  const techniqueBackgrounds = {
+    "flashcards": require("../assets/images/yasmin.jpg"),
+    "mind-mapping": require("../assets/images/yasmin.jpg"),
+    "pomodoro": require("../assets/images/jade.jpg"),
+    "spaced-repetition": require("../assets/images/jade.jpg"),
+    "multiple-choice": require("../assets/images/sasha.jpg"),
+    "active-recall": require("../assets/images/sasha.jpg"),
+    "feynman": require("../assets/images/cloe.jpg"),
+    "study-buddy": require("../assets/images/cloe.jpg"),
   };
 
-  // Get the character's data
-  const character = characterData[characterName];
-  if (!character) {
-    return null;
-  }
-
-  // Check if the technique is in the character's specialties
-  if (character.specialties.includes(technique)) {
-    return character.background;
-  }
-
-  // If not a specialty, return null (no background)
-  return null;
+  // Return the background for this technique
+  return techniqueBackgrounds[technique] || null;
 };
 /**
  * Get character-specific background for study techniques

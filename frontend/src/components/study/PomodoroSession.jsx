@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import StudySession from "./StudySession";
 import "./PomodoroSession.css";
 
 const PomodoroSession = ({ flashcards, onSessionComplete }) => {
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
+  const [completedPomodoros, setCompletedPomodoros] = useState(0);
 
   useEffect(() => {
     let interval = null;
@@ -18,6 +18,7 @@ const PomodoroSession = ({ flashcards, onSessionComplete }) => {
       // Timer finished
       if (!isBreak) {
         // Study session done, start break
+        setCompletedPomodoros(prev => prev + 1);
         setIsBreak(true);
         setTimeLeft(5 * 60); // 5 minute break
         setIsActive(false);
@@ -40,31 +41,56 @@ const PomodoroSession = ({ flashcards, onSessionComplete }) => {
       .padStart(2, "0")}`;
   };
 
+  const handleReset = () => {
+    setIsActive(false);
+    setTimeLeft(25 * 60);
+    setIsBreak(false);
+  };
+
+  const handleFinishSession = () => {
+    if (onSessionComplete) {
+      onSessionComplete({ completedPomodoros });
+    }
+  };
+
   return (
     <div className="pomodoro-session">
-      {/* Pomodoro Timer Overlay */}
-      <div className="pomodoro-timer">
-        <div className="timer-display">
-          {isBreak ? "☕ Break Time" : "📚 Study Time"}
+      {!isBreak ? (
+        <div className="pomodoro-main-screen">
+          {/* Large Timer Display */}
+          <div className="pomodoro-timer-large">
+            <div className="timer-header">
+              <h1>⏱️ Pomodoro Study Session</h1>
+              <p className="pomodoros-completed">
+                Completed: {completedPomodoros} 🍅
+              </p>
+            </div>
+
+            <div className="timer-countdown-large">{formatTime(timeLeft)}</div>
+
+            <div className="timer-controls">
+              <button className="timer-toggle" onClick={() => setIsActive(!isActive)}>
+                {isActive ? "⏸️ Pause" : "▶️ Start"}
+              </button>
+              <button className="timer-reset" onClick={handleReset}>
+                🔄 Reset
+              </button>
+            </div>
+
+            <button className="finish-session-btn" onClick={handleFinishSession}>
+              ✓ Finish Session & Earn XP
+            </button>
+          </div>
         </div>
-        <div className="timer-countdown">{formatTime(timeLeft)}</div>
-        <button className="timer-toggle" onClick={() => setIsActive(!isActive)}>
-          {isActive ? "Pause ⏸️" : "Start ▶️"}
-        </button>
-      </div>
-
-      {/* Regular study session below */}
-      {!isBreak && (
-        <StudySession
-          flashcards={flashcards}
-          onSessionComplete={onSessionComplete}
-        />
-      )}
-
-      {isBreak && (
+      ) : (
         <div className="break-screen">
           <h1>Take a Break! ☕</h1>
           <p>You've earned it. Relax for {formatTime(timeLeft)}</p>
+          {!isActive && timeLeft > 0 && (
+            <button className="timer-toggle" onClick={() => setIsActive(true)}>
+              ▶️ Start Break Timer
+            </button>
+          )}
         </div>
       )}
     </div>
