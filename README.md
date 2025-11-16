@@ -3,7 +3,6 @@
 > **Making Learning Cool Again!** 🚀
 
 [![Hackathon](https://img.shields.io/badge/Hackathon-CS%20Girlies%202025-ff69b4)](https://csgirlies-nov-hackathon.devpost.com/)
-[![Track](https://img.shields.io/badge/Track-Choose%20One-blue)](#)
 [![Status](https://img.shields.io/badge/Status-In%20Development-yellow)](#)
 
 ## 📌 Quick Links
