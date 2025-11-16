@@ -120,7 +120,8 @@ FLASK_ENV=development
 PORT=5000
 ```
 
-4. **Start Development Servers**
+4. **Start Development Servers**  
+
 Terminal 1 - Backend:
 ```bash
 cd backend
@@ -139,7 +140,7 @@ npm start
 ## 📖 How It Works
 
 ### User Flow
-1. Choose Character
+1. Choose Character  
    ↓
 2. Input Topic or Upload PDF
    ↓
