@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StudySession from '../components/study/StudySession';
 import LevelUp from '../components/levelup/LevelUp';
+import { generateFlashcards } from '../services/api';
 
 const StudyPage = () => {
   const navigate = useNavigate();
@@ -39,13 +40,22 @@ const StudyPage = () => {
         return;
       }
 
-      // TODO Person 5: Replace with real API call
-      const mockFlashcards = generateMockFlashcards(topic, parseInt(cardCount));
-      
-      setTimeout(() => {
+      try {
+        // Use the API service (currently returns mock data). When backend is ready,
+        // `generateFlashcards` will call the real endpoint at /api/flashcards/generate.
+        const cards = await generateFlashcards(topic, parseInt(cardCount));
+
+        // If service returns an object with { flashcards, ... } handle that too
+        const normalized = Array.isArray(cards) ? cards : (cards.flashcards || []);
+
+        setFlashcards(normalized);
+      } catch (err) {
+        console.error('Failed to load flashcards from API, falling back to local mock', err);
+        const mockFlashcards = generateMockFlashcards(topic, parseInt(cardCount));
         setFlashcards(mockFlashcards);
+      } finally {
         setIsLoading(false);
-      }, 1000);
+      }
     };
 
     loadFlashcards();

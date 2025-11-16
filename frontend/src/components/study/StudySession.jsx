@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Flashcard from '../flashcards/Flashcard';
 import './StudySession.css';
 
@@ -19,7 +20,7 @@ const StudySession = ({ flashcards, onSessionComplete }) => {
   const [reviewCount, setReviewCount] = useState(0);
   const [startTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
-
+  const navigate = useNavigate();
   // Timer - updates every second
   useEffect(() => {
     const timer = setInterval(() => {
@@ -28,6 +29,28 @@ const StudySession = ({ flashcards, onSessionComplete }) => {
 
     return () => clearInterval(timer);
   }, [startTime]);
+
+  // Guard: if flashcards is empty or undefined, show fallback UI
+  if (!flashcards || flashcards.length === 0) {
+    return (
+      <div className="study-session empty-session" style={{
+        height: '60vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '16px',
+        color: '#fff'
+      }}>
+        <div style={{ fontSize: '48px' }}>🤔</div>
+        <div>No flashcards found for this topic.</div>
+        <div style={{ opacity: 0.9 }}>Try generating flashcards from the topic input page.</div>
+        <div>
+          <button className="start-button" onClick={() => navigate('/topic-input')}>Back to Topic</button>
+        </div>
+      </div>
+    );
+  }
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);

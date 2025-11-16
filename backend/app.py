@@ -1,4 +1,5 @@
 """
+app.py
 Main Flask application for CS Girlies Hackathon project
 Backend API with AI integration, RAG, Flashcards, and XP System
 """
@@ -9,6 +10,8 @@ import os
 from dotenv import load_dotenv
 import json
 from datetime import datetime
+from rag_service import rag_service
+import tempfile
 
 # Load environment variables
 load_dotenv()
@@ -269,49 +272,41 @@ def analyze_content():
 
 @app.route('/api/rag/upload', methods=['POST'])
 def upload_document():
-    """
-    Upload document for RAG processing
-    Expects: { "content": "text or file content", "filename": "doc.pdf", "user_id": "user123" }
-    Returns: { "doc_id": "...", "chunks_processed": 10, "xp_data": {...} }
-    """
+    """Upload PDF using improved RAG system"""
     try:
-        data = request.get_json()
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
         
-        if not data or 'content' not in data:
-            return jsonify({
-                'error': 'Missing content field in request'
-            }), 400
+        file = request.files['file']
+        user_id = request.form.get('user_id', 'default_user')
         
-        content = data['content']
-        filename = data.get('filename', 'untitled.txt')
-        user_id = data.get('user_id', 'default_user')
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
         
-        # Check if user has unlocked RAG feature
-        user = get_user_progress(user_id)
-        if user['level'] < 3 and 'rag_upload' not in user['unlocked_features']:
-            return jsonify({
-                'error': 'RAG upload feature locked. Reach level 3 to unlock.',
-                'required_level': 3,
-                'current_level': user['level']
-            }), 403
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files supported'}), 400
         
-        # Process document for RAG
-        result = process_document_for_rag(content, filename, user_id)
+        # Save file temporarily
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+            file.save(tmp_file.name)
+            tmp_path = tmp_file.name
         
-        if result.get('status') == 'success':
-            # Award XP for document upload
-            xp_data = award_xp(user_id, 'document_upload', bonus=result.get('chunks_processed', 0) * 2)
+        # Process with improved RAG
+        result = rag_service.process_pdf(tmp_path, user_id)
+        
+        # Clean up temp file
+        os.unlink(tmp_path)
+        
+        if result['status'] == 'success':
+            # Award XP
+            xp_data = award_xp(user_id, 'document_upload', 
+                              bonus=result.get('chunks_processed', 0) * 2)
             result['xp_data'] = xp_data
-            
-            user['documents_processed'] += 1
         
         return jsonify(result), 200
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'status': 'failed'
-        }), 500
+        return jsonify({'status': 'failed', 'error': str(e)}), 500
 
 
 @app.route('/api/rag/upload-pdf', methods=['POST'])
@@ -474,60 +469,65 @@ def load_smol_training_pdf():
 
 @app.route('/api/rag/query', methods=['POST'])
 def query_rag():
-    """
-    Query the RAG system
-    Expects: { "query": "question", "user_id": "user123", "top_k": 3 }
-    Returns: { "answer": "...", "sources": [...], "xp_data": {...} }
-    """
+    """Query using improved RAG system"""
     try:
         data = request.get_json()
         
         if not data or 'query' not in data:
-            return jsonify({
-                'error': 'Missing query field in request'
-            }), 400
+            return jsonify({'error': 'Missing query'}), 400
         
         query = data['query']
         user_id = data.get('user_id', 'default_user')
         top_k = data.get('top_k', 3)
         
-        # Query RAG system
-        result = query_rag_system(query, user_id, top_k)
+        # Query improved RAG
+        result = rag_service.query(user_id, query, top_k)
         
-        if result.get('status') == 'success':
-            # Award XP for using RAG
+        if result['status'] == 'success':
+            # Use Groq to generate answer from context
+            from ai_service import groq_client, GROQ_AVAILABLE
+            
+            if GROQ_AVAILABLE and groq_client:
+                prompt = f"""Answer this question based on the context below.
+                
+Context:
+{result['context']}
+
+Question: {query}
+
+Provide a clear answer and cite which parts of the context you used."""
+                
+                response = groq_client.chat.completions.create(
+                    model="openai/gpt-oss-20b",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_completion_tokens=700
+                )
+                
+                result['answer'] = response.choices[0].message.content
+            
+            # Award XP
             xp_data = award_xp(user_id, 'flashcard_review')
             result['xp_data'] = xp_data
         
         return jsonify(result), 200
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'status': 'failed'
-        }), 500
+        return jsonify({'status': 'failed', 'error': str(e)}), 500
 
 
 @app.route('/api/rag/stats', methods=['GET'])
 def rag_stats():
-    """
-    Get RAG system statistics
-    Query params: ?user_id=user123
-    Returns: { "total_documents": 5, "total_chunks": 150, ... }
-    """
+    """Get RAG stats using improved system"""
     try:
         user_id = request.args.get('user_id', 'default_user')
-        
-        result = get_rag_stats(user_id)
-        
+        result = rag_service.get_stats(user_id)
         return jsonify(result), 200
-        
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'status': 'failed'
-        }), 500
-
+        return jsonify({'status': 'failed', 'error': str(e)}), 500
 
 @app.route('/api/xp/award', methods=['POST'])
 def award_xp_endpoint():

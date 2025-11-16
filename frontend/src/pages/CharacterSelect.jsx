@@ -5,6 +5,7 @@ import char1 from '../assets/images/char1.jpg';
 import char2 from '../assets/images/char2.jpg';
 import char3 from '../assets/images/char3.jpg';
 import char4 from '../assets/images/char4.jpg';
+import bg1 from '../assets/images/bg3.png';
 
 /**
  * Character Selection Page
@@ -23,7 +24,7 @@ const CharacterSelect = () => {
       name: 'Yasmin',
       style: 'Creative Explorer',
       color: '#ff69b4',
-      image: char1,
+      image: char2,
       description: 'Learns best through visual connections and creative thinking'
     },
     {
@@ -31,7 +32,7 @@ const CharacterSelect = () => {
       name: 'Jade',
       style: 'Strategic Planner',
       color: '#9b59b6',
-      image: char2,
+      image: char1,
       description: 'Masters concepts through structured study and organization'
     },
     {
@@ -65,7 +66,7 @@ const CharacterSelect = () => {
   };
 
   return (
-    <div className="character-select">
+    <div className="character-select" style={{ backgroundImage: `url(${bg1})` }}>
       <div className="character-select-container">
         <h1 className="page-title">Pick Your Study Persona! ✨</h1>
         <p className="page-subtitle">Each character has a unique learning style</p>
