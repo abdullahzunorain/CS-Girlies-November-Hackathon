@@ -142,17 +142,17 @@ npm start
 ### User Flow
 1. Choose Character  
    ↓
-2. Input Topic or Upload PDF
+2. Input Topic or Upload PDF  
    ↓
-3. AI Generates Flashcards (10-20 cards)
+3. AI Generates Flashcards (10-20 cards)  
    ↓
-4. Select Study Technique
+4. Select Study Technique  
    ↓
-5. Study & Earn XP
+5. Study & Earn XP  
    ↓
-6. Level Up & Unlock Features
+6. Level Up & Unlock Features  
    ↓
-7. View Progress & Compete
+7. View Progress & Compete  
 
 ---
 
