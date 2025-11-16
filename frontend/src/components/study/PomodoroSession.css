@@ -1,0 +1,60 @@
+.pomodoro-session {
+  position: relative;
+  min-height: 100vh;
+}
+
+.pomodoro-timer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.timer-display {
+  color: #00ffff;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.timer-countdown {
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+  font-family: 'Press Start 2P', monospace;
+  margin-bottom: 15px;
+}
+
+.timer-toggle {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  border: none;
+  border-radius: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.break-screen {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4a148c 0%, #880e4f 100%);
+  color: white;
+  text-align: center;
+}
+
+.break-screen h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.break-screen p {
+  font-size: 24px;
+}

@@ -8,10 +8,17 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 // ==========================================
-// PERSON 1's API - Flashcard Generation
+// UNIFIED Flashcard Generation
 // ==========================================
 
-export const generateFlashcards = async (topic, count = 10) => {
+/**
+ * Generate flashcards - works for both topics and uploaded PDFs
+ */
+export const generateFlashcards = async (
+  topic,
+  count = 10,
+  userId = "demo_user"
+) => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/flashcards/generate`, {
       method: "POST",
@@ -19,7 +26,7 @@ export const generateFlashcards = async (topic, count = 10) => {
       body: JSON.stringify({
         content: topic,
         num_cards: count,
-        user_id: "demo_user",
+        user_id: userId,
       }),
     });
 
@@ -45,12 +52,10 @@ export const generateFlashcards = async (topic, count = 10) => {
     } else if (Array.isArray(data.flashcards)) {
       cards = data.flashcards;
     } else if (data.flashcards && typeof data.flashcards === "string") {
-      // The AI is returning a JSON string - parse it
       try {
         cards = JSON.parse(data.flashcards);
       } catch (e) {
         console.error("Failed to parse flashcards JSON string:", e);
-        // Try to clean up incomplete JSON (the backend response is cut off)
         const cleaned = data.flashcards.replace(/,\s*$/, "") + "}]";
         try {
           cards = JSON.parse(cleaned);
@@ -61,7 +66,7 @@ export const generateFlashcards = async (topic, count = 10) => {
       }
     }
 
-    // Normalize to { question, answer } expected by StudySession/Flashcard
+    // Normalize to { question, answer }
     const normalized = cards.map((c) => ({
       question: c.front || c.question || "",
       answer: c.back || c.answer || "",
@@ -71,7 +76,7 @@ export const generateFlashcards = async (topic, count = 10) => {
     return normalized;
   } catch (error) {
     console.error("Error generating flashcards from backend:", error);
-    // fallback mock
+    // Fallback mock
     return [
       {
         question: `What is the main concept of ${topic}?`,
@@ -89,20 +94,112 @@ export const generateFlashcards = async (topic, count = 10) => {
   }
 };
 
+/**
+ * Generate flashcards from uploaded PDF using RAG
+ */
+export const generateFlashcardsFromRAG = async (
+  userId = "demo_user",
+  numCards = 10
+) => {
+  try {
+    console.log("📄 Generating flashcards from uploaded PDF...");
+
+    // Step 1: Query RAG to get document content
+    const queryResponse = await fetch(`${API_BASE_URL}/api/rag/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query:
+          "Summarize the main concepts, topics, and key information in this document",
+        user_id: userId,
+        top_k: 5, // Get top 5 relevant chunks
+      }),
+    });
+
+    if (!queryResponse.ok) {
+      throw new Error("Failed to query RAG system");
+    }
+
+    const queryData = await queryResponse.json();
+
+    if (queryData.status !== "success" || !queryData.context) {
+      throw new Error("No document content found in RAG system");
+    }
+
+    console.log("✅ Retrieved document content from RAG");
+
+    // Step 2: Generate flashcards from the retrieved content
+    const flashcardsResponse = await fetch(
+      `${API_BASE_URL}/api/flashcards/generate`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: queryData.context,
+          num_cards: numCards,
+          user_id: userId,
+        }),
+      }
+    );
+
+    if (!flashcardsResponse.ok) {
+      throw new Error("Failed to generate flashcards");
+    }
+
+    const flashcardsData = await flashcardsResponse.json();
+
+    if (flashcardsData.status !== "success") {
+      throw new Error("Flashcard generation failed");
+    }
+
+    // Parse flashcards
+    let cards = [];
+    if (Array.isArray(flashcardsData.flashcards)) {
+      cards = flashcardsData.flashcards;
+    } else if (typeof flashcardsData.flashcards === "string") {
+      try {
+        cards = JSON.parse(flashcardsData.flashcards);
+      } catch (e) {
+        console.error("Failed to parse flashcards:", e);
+        cards = [];
+      }
+    }
+
+    // Normalize
+    const normalized = cards.map((c) => ({
+      question: c.front || c.question || "",
+      answer: c.back || c.answer || "",
+    }));
+
+    console.log(`✅ Generated ${normalized.length} flashcards from PDF`);
+    return normalized;
+  } catch (error) {
+    console.error("Error generating flashcards from RAG:", error);
+
+    // Fallback
+    return [
+      {
+        question: "What are the main topics covered in this document?",
+        answer: "Please review the uploaded document for key concepts.",
+      },
+      {
+        question: "What is the primary focus of this material?",
+        answer: "The document contains important information for study.",
+      },
+      {
+        question: "What should I remember from this document?",
+        answer: "Review the key points and concepts presented.",
+      },
+    ];
+  }
+};
+
 // ==========================================
-// PERSON 2's API - XP System
+// XP System
 // ==========================================
 
 export const awardXP = async (amount, reason = "study") => {
   try {
-    // TODO Person 5: Replace with real API call
-    // const response = await fetch(`${API_BASE_URL}/api/xp/award`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ amount, reason })
-    // });
-    // return await response.json();
-
     console.log(`Awarded ${amount} XP for ${reason}`);
     return { success: true, newTotal: 150 };
   } catch (error) {
@@ -113,11 +210,7 @@ export const awardXP = async (amount, reason = "study") => {
 
 export const getCurrentProgress = async () => {
   try {
-    // TODO Person 5: Replace with real API call
-    // const response = await fetch(`${API_BASE_URL}/api/progress`);
-    // return await response.json();
-
-    // Mock data
+    // Mock data for now
     return {
       currentXP: 350,
       currentLevel: 3,
@@ -132,17 +225,12 @@ export const getCurrentProgress = async () => {
 
 export const checkLevelUp = async (currentXP) => {
   try {
-    // TODO Person 5: Replace with real logic
-    // const response = await fetch(`${API_BASE_URL}/api/level/check?xp=${currentXP}`);
-    // return await response.json();
-
-    // Mock level up logic
     const levelThresholds = [0, 100, 250, 450, 700, 1000];
     const currentLevel =
       levelThresholds.findIndex((threshold) => currentXP < threshold) - 1;
 
     return {
-      leveledUp: false, // Will be true when user crosses threshold
+      leveledUp: false,
       newLevel: currentLevel,
       unlocked: null,
     };
@@ -158,11 +246,10 @@ export const checkLevelUp = async (currentXP) => {
 
 export const startStudySession = async (topic) => {
   try {
-    // This combines Person 1's flashcard generation
     const flashcards = await generateFlashcards(topic);
 
     return {
-      sessionId: Date.now(), // Mock session ID
+      sessionId: Date.now(),
       flashcards,
       startTime: Date.now(),
     };
@@ -174,47 +261,11 @@ export const startStudySession = async (topic) => {
 
 export const completeStudySession = async (sessionData) => {
   try {
-    // TODO Person 5: Send session data to backend
-    // await fetch(`${API_BASE_URL}/api/session/complete`, {
-    //   method: 'POST',
-    //   body: JSON.stringify(sessionData)
-    // });
-
     console.log("Session completed:", sessionData);
-
-    // Award completion bonus
     await awardXP(50, "session_complete");
-
     return { success: true };
   } catch (error) {
     console.error("Error completing session:", error);
     return { success: false };
   }
 };
-
-// ==========================================
-// Usage Example in Your Components
-// ==========================================
-
-/*
-
-import { generateFlashcards, awardXP, getCurrentProgress } from '../services/api';
-
-// In StudySession component:
-const [flashcards, setFlashcards] = useState([]);
-
-useEffect(() => {
-  const loadFlashcards = async () => {
-    const cards = await generateFlashcards('Biology', 10);
-    setFlashcards(cards);
-  };
-  loadFlashcards();
-}, []);
-
-// When user answers correctly:
-const handleCorrect = async () => {
-  await awardXP(15, 'correct_answer');
-  // ... rest of your logic
-};
-
-*/
