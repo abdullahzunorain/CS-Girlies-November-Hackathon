@@ -368,7 +368,7 @@ Response:
 ## 👥 Team
 
 - **[Jo Gurvantamir]** - [all rounder] - [[GitHub](https://github.com/jo-walker)/[LinkedIn](https://www.linkedin.com/in/jo-tamir/)]
-- **[Abdullah Zunorain]** - [backend] - [[GitHub](https://github.com/abdullahzunorain)/[LinkedIn](linkedin.com/in/abdullahzunorain/)]
+- **[Abdullah Zunorain]** - [backend] - [[GitHub](https://github.com/abdullahzunorain)/[LinkedIn](https://www.linkedin.com/in/abdullahzunorain/)]
 - **[Jackie]** - [backend] - [[GitHub](https://github.com/jacquelinehrndz)/[LinkedIn](https://www.linkedin.com/in/jacquelinelhernandez)]
 - **[Sylvie]** - [documentation] - [[GitHub](https://github.com/ayzaax)/[LinkedIn](https://www.linkedin.com/in/sylviezabetoglu/)]
 - **[Evelyn]** - [ui design] - [GitHub/LinkedIn]
