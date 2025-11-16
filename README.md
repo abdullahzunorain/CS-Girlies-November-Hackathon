@@ -1,4 +1,4 @@
-# 🧠 [Your Project Name] - CS Girlies Hackathon 2025
+# 🧠 Bratz Study - CS Girlies Hackathon 2025
 
 > **Making Learning Cool Again!** 🚀
 
@@ -54,7 +54,6 @@ By combining gamification with proven learning strategies, StudyBratz keeps stud
 - **AI-Generated Flashcards:** Automatically create Q/A flashcards from user-selected topics or uploaded notes.  
 - **Gamified Study Sessions:** Earn XP and level up by completing study sessions, making learning fun and motivating.  
 - **Study Powers & Techniques:** Unlock proven study methods like Pomodoro, Feynman, Active Recall, and Spaced Repetition.  
-- **Customizable Avatars & Rooms:** Choose Y2K-style Bratz avatars, decorate your virtual room, and unlock outfits and hairstyles as you progress.  
 
 
 ---
@@ -139,61 +138,6 @@ Frontend <-> API <-> AI Service <-> Database
 
 ---
 
-## 🎨 Design & UX Highlights
-
-- **Clean Interface**: [Describe design philosophy]
-- **Accessibility**: [How you made it inclusive]
-- **Mobile-Friendly**: [Responsive design approach]
-
----
-
-## 🧪 Testing
-
-```bash
-# Run tests
-npm test  # Frontend tests
-pytest    # Backend tests
-```
-
----
-
-## 📊 Project Roadmap
-
-### ✅ Completed
-- [x] Core functionality
-- [x] AI integration
-- [x] Basic UI
-
-### 🚧 In Progress
-- [ ] Advanced features
-- [ ] Documentation
-- [ ] Testing
-
-### 🔮 Future Plans
-- [ ] Mobile app
-- [ ] More AI models
-- [ ] Community features
-
----
-
-## 🏅 Judging Criteria Alignment
-
-### Educational Impact (★★★★★)
-[How your project helps students learn better]
-
-### Creativity & Innovation (★★★★★)
-[What makes your project unique]
-
-### Technical Craft (★★★★☆)
-[Technologies used and implementation quality]
-
-### Design & UX (★★★★☆)
-[User experience highlights]
-
-### Community & Accessibility (★★★☆☆)
-[Inclusivity features]
-
----
 
 ## 👥 Team
 
@@ -223,19 +167,6 @@ MIT License - see [LICENSE](LICENSE) file for details
 - **Discord**: [Join the community](https://discord.gg/csgirlies)
 - **Documentation**: [GitBook Link]
 
----
-
-## 📝 DevPost Submission Checklist
-
-- [ ] ✅ Demo video (1-5 mins)
-- [ ] ✅ Project description
-- [ ] ✅ Public code repository
-- [ ] ✅ Team info added
-- [ ] ✅ Track selected
-- [ ] ✅ README with setup instructions
-- [ ] ✅ GitBook documentation (for bonus prize)
-
----
 
 **Built with ❤️ for CS Girlies November Hackathon 2025**
 
