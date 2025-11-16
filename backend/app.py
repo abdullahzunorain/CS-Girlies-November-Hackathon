@@ -1,4 +1,5 @@
 """
+app.py
 Main Flask application for CS Girlies Hackathon project
 Backend API with AI integration, RAG, Flashcards, and XP System
 """
@@ -9,6 +10,8 @@ import os
 from dotenv import load_dotenv
 import json
 from datetime import datetime
+from rag_service import rag_service
+import tempfile
 
 # Load environment variables
 load_dotenv()
@@ -21,7 +24,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-# Import AI service
+# Import services
 from ai_service import (
     process_with_ai,
     generate_flashcards,
@@ -31,9 +34,7 @@ from ai_service import (
     query_rag_system,
     get_rag_stats
 )
-
-# In-memory storage for user progress (use database in production)
-user_data = {}
+from user_service import user_service
 
 # XP System Configuration
 XP_CONFIG = {
@@ -48,57 +49,53 @@ XP_CONFIG = {
 LEVEL_THRESHOLDS = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 12000, 17000]
 
 def calculate_level(xp):
-    """Calculate user level based on XP"""
-    for level, threshold in enumerate(LEVEL_THRESHOLDS):
-        if xp < threshold:
-            return level - 1 if level > 0 else 0
-    return len(LEVEL_THRESHOLDS) - 1
+    """Calculate user level based on XP (level 1 starts at 0 XP)"""
+    for level in range(len(LEVEL_THRESHOLDS) - 1, -1, -1):
+        if xp >= LEVEL_THRESHOLDS[level]:
+            return level + 1  # Return 1-indexed level
+    return 1  # Minimum level 1
 
 def get_user_progress(user_id):
     """Get or create user progress data"""
-    if user_id not in user_data:
-        user_data[user_id] = {
-            'xp': 0,
-            'level': 0,
-            'flashcards_reviewed': 0,
-            'quizzes_completed': 0,
-            'documents_processed': 0,
-            'streak': 0,
-            'last_activity': None,
-            'achievements': [],
-            'unlocked_features': ['basic_flashcards']
-        }
-    return user_data[user_id]
+    return user_service.get_user(user_id)
 
 def award_xp(user_id, activity_type, bonus=0):
     """Award XP to user and check for level ups"""
-    user = get_user_progress(user_id)
+    user = user_service.get_user(user_id)
     xp_earned = XP_CONFIG.get(activity_type, 0) + bonus
     
-    user['xp'] += xp_earned
+    # Calculate old and new level
     old_level = user['level']
-    new_level = calculate_level(user['xp'])
+    new_xp = user['xp'] + xp_earned
+    new_level = calculate_level(new_xp)
+    
+    # Update XP
+    user_service.add_xp(user_id, xp_earned)
+    user = user_service.get_user(user_id)  # Refresh
     
     level_up = new_level > old_level
     if level_up:
-        user['level'] = new_level
         # Unlock features based on level
-        if new_level >= 2 and 'quiz_mode' not in user['unlocked_features']:
-            user['unlocked_features'].append('quiz_mode')
-        if new_level >= 3 and 'rag_upload' not in user['unlocked_features']:
-            user['unlocked_features'].append('rag_upload')
-        if new_level >= 5 and 'advanced_analytics' not in user['unlocked_features']:
-            user['unlocked_features'].append('advanced_analytics')
-    
-    user['last_activity'] = datetime.now().isoformat()
+        unlocked_features = user.get('unlocked_features', ['basic_flashcards']).copy()
+        if new_level >= 2 and 'quiz_mode' not in unlocked_features:
+            unlocked_features.append('quiz_mode')
+        if new_level >= 3 and 'rag_upload' not in unlocked_features:
+            unlocked_features.append('rag_upload')
+        if new_level >= 5 and 'advanced_analytics' not in unlocked_features:
+            unlocked_features.append('advanced_analytics')
+        
+        user_service.update_user(user_id, {
+            'level': new_level,
+            'unlocked_features': unlocked_features
+        })
     
     return {
         'xp_earned': xp_earned,
         'total_xp': user['xp'],
-        'level': user['level'],
+        'level': new_level,
         'level_up': level_up,
         'next_level_xp': LEVEL_THRESHOLDS[min(new_level + 1, len(LEVEL_THRESHOLDS) - 1)],
-        'unlocked_features': user['unlocked_features']
+        'unlocked_features': user.get('unlocked_features', ['basic_flashcards'])
     }
 
 @app.route('/')
@@ -269,49 +266,41 @@ def analyze_content():
 
 @app.route('/api/rag/upload', methods=['POST'])
 def upload_document():
-    """
-    Upload document for RAG processing
-    Expects: { "content": "text or file content", "filename": "doc.pdf", "user_id": "user123" }
-    Returns: { "doc_id": "...", "chunks_processed": 10, "xp_data": {...} }
-    """
+    """Upload PDF using improved RAG system"""
     try:
-        data = request.get_json()
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
         
-        if not data or 'content' not in data:
-            return jsonify({
-                'error': 'Missing content field in request'
-            }), 400
+        file = request.files['file']
+        user_id = request.form.get('user_id', 'default_user')
         
-        content = data['content']
-        filename = data.get('filename', 'untitled.txt')
-        user_id = data.get('user_id', 'default_user')
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
         
-        # Check if user has unlocked RAG feature
-        user = get_user_progress(user_id)
-        if user['level'] < 3 and 'rag_upload' not in user['unlocked_features']:
-            return jsonify({
-                'error': 'RAG upload feature locked. Reach level 3 to unlock.',
-                'required_level': 3,
-                'current_level': user['level']
-            }), 403
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files supported'}), 400
         
-        # Process document for RAG
-        result = process_document_for_rag(content, filename, user_id)
+        # Save file temporarily
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+            file.save(tmp_file.name)
+            tmp_path = tmp_file.name
         
-        if result.get('status') == 'success':
-            # Award XP for document upload
-            xp_data = award_xp(user_id, 'document_upload', bonus=result.get('chunks_processed', 0) * 2)
+        # Process with improved RAG
+        result = rag_service.process_pdf(tmp_path, user_id)
+        
+        # Clean up temp file
+        os.unlink(tmp_path)
+        
+        if result['status'] == 'success':
+            # Award XP
+            xp_data = award_xp(user_id, 'document_upload', 
+                              bonus=result.get('chunks_processed', 0) * 2)
             result['xp_data'] = xp_data
-            
-            user['documents_processed'] += 1
         
         return jsonify(result), 200
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'status': 'failed'
-        }), 500
+        return jsonify({'status': 'failed', 'error': str(e)}), 500
 
 
 @app.route('/api/rag/upload-pdf', methods=['POST'])
@@ -474,60 +463,65 @@ def load_smol_training_pdf():
 
 @app.route('/api/rag/query', methods=['POST'])
 def query_rag():
-    """
-    Query the RAG system
-    Expects: { "query": "question", "user_id": "user123", "top_k": 3 }
-    Returns: { "answer": "...", "sources": [...], "xp_data": {...} }
-    """
+    """Query using improved RAG system"""
     try:
         data = request.get_json()
         
         if not data or 'query' not in data:
-            return jsonify({
-                'error': 'Missing query field in request'
-            }), 400
+            return jsonify({'error': 'Missing query'}), 400
         
         query = data['query']
         user_id = data.get('user_id', 'default_user')
         top_k = data.get('top_k', 3)
         
-        # Query RAG system
-        result = query_rag_system(query, user_id, top_k)
+        # Query improved RAG
+        result = rag_service.query(user_id, query, top_k)
         
-        if result.get('status') == 'success':
-            # Award XP for using RAG
+        if result['status'] == 'success':
+            # Use Groq to generate answer from context
+            from ai_service import groq_client, GROQ_AVAILABLE
+            
+            if GROQ_AVAILABLE and groq_client:
+                prompt = f"""Answer this question based on the context below.
+                
+Context:
+{result['context']}
+
+Question: {query}
+
+Provide a clear answer and cite which parts of the context you used."""
+                
+                response = groq_client.chat.completions.create(
+                    model="openai/gpt-oss-20b",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_completion_tokens=700
+                )
+                
+                result['answer'] = response.choices[0].message.content
+            
+            # Award XP
             xp_data = award_xp(user_id, 'flashcard_review')
             result['xp_data'] = xp_data
         
         return jsonify(result), 200
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'status': 'failed'
-        }), 500
+        return jsonify({'status': 'failed', 'error': str(e)}), 500
 
 
 @app.route('/api/rag/stats', methods=['GET'])
 def rag_stats():
-    """
-    Get RAG system statistics
-    Query params: ?user_id=user123
-    Returns: { "total_documents": 5, "total_chunks": 150, ... }
-    """
+    """Get RAG stats using improved system"""
     try:
         user_id = request.args.get('user_id', 'default_user')
-        
-        result = get_rag_stats(user_id)
-        
+        result = rag_service.get_stats(user_id)
         return jsonify(result), 200
-        
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'status': 'failed'
-        }), 500
-
+        return jsonify({'status': 'failed', 'error': str(e)}), 500
 
 @app.route('/api/xp/award', methods=['POST'])
 def award_xp_endpoint():
@@ -584,7 +578,17 @@ def get_progress():
         
         user = get_user_progress(user_id)
         current_level = user['level']
-        next_level_xp = LEVEL_THRESHOLDS[min(current_level + 1, len(LEVEL_THRESHOLDS) - 1)]
+        # Convert 1-indexed level back to 0-indexed for threshold lookup
+        threshold_index = min(current_level - 1, len(LEVEL_THRESHOLDS) - 2)
+        next_threshold_index = min(current_level, len(LEVEL_THRESHOLDS) - 1)
+        current_threshold = LEVEL_THRESHOLDS[threshold_index]
+        next_level_xp = LEVEL_THRESHOLDS[next_threshold_index]
+        
+        # Calculate progress as percentage between current and next threshold
+        if next_level_xp > current_threshold:
+            progress = (user['xp'] - current_threshold) / (next_level_xp - current_threshold) * 100
+        else:
+            progress = 100
         
         return jsonify({
             'status': 'success',
@@ -592,7 +596,7 @@ def get_progress():
             'xp': user['xp'],
             'level': user['level'],
             'next_level_xp': next_level_xp,
-            'progress_to_next_level': (user['xp'] - LEVEL_THRESHOLDS[current_level]) / (next_level_xp - LEVEL_THRESHOLDS[current_level]) * 100 if next_level_xp > LEVEL_THRESHOLDS[current_level] else 100,
+            'progress_to_next_level': progress,
             'flashcards_reviewed': user['flashcards_reviewed'],
             'quizzes_completed': user['quizzes_completed'],
             'documents_processed': user['documents_processed'],
@@ -600,6 +604,80 @@ def get_progress():
             'last_activity': user['last_activity'],
             'achievements': user['achievements'],
             'unlocked_features': user['unlocked_features']
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'status': 'failed'
+        }), 500
+
+
+@app.route('/api/user/character', methods=['POST'])
+def set_character():
+    """
+    Save character selection for user
+    Expects: { "user_id": "user123", "character": { "id": "...", "name": "Yasmin", ... } }
+    Returns: { "status": "success", "character": {...} }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'user_id' not in data or 'character' not in data:
+            return jsonify({
+                'error': 'Missing required fields: user_id, character'
+            }), 400
+        
+        user_id = data['user_id']
+        character = data['character']
+        
+        # Save character to user profile
+        user_service.set_character(user_id, character)
+        
+        return jsonify({
+            'status': 'success',
+            'user_id': user_id,
+            'character': character,
+            'message': f'Character {character.get("name", "Unknown")} selected!'
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'status': 'failed'
+        }), 500
+
+
+@app.route('/api/user/character', methods=['GET'])
+def get_character():
+    """
+    Get user's selected character
+    Query params: ?user_id=user123
+    Returns: { "status": "success", "character": {...} }
+    """
+    try:
+        user_id = request.args.get('user_id', 'default_user')
+        
+        if not user_id:
+            return jsonify({
+                'error': 'Missing user_id parameter'
+            }), 400
+        
+        user = get_user_progress(user_id)
+        character = user.get('character')
+        
+        if not character:
+            return jsonify({
+                'status': 'success',
+                'user_id': user_id,
+                'character': None,
+                'message': 'No character selected yet'
+            }), 200
+        
+        return jsonify({
+            'status': 'success',
+            'user_id': user_id,
+            'character': character
         }), 200
         
     except Exception as e:
@@ -619,24 +697,8 @@ def get_leaderboard():
     try:
         limit = int(request.args.get('limit', 10))
         
-        # Sort users by XP
-        sorted_users = sorted(
-            [(user_id, data) for user_id, data in user_data.items()],
-            key=lambda x: x[1]['xp'],
-            reverse=True
-        )[:limit]
-        
-        leaderboard = [
-            {
-                'rank': idx + 1,
-                'user_id': user_id,
-                'xp': data['xp'],
-                'level': data['level'],
-                'flashcards_reviewed': data['flashcards_reviewed'],
-                'quizzes_completed': data['quizzes_completed']
-            }
-            for idx, (user_id, data) in enumerate(sorted_users)
-        ]
+        # Get leaderboard from user service
+        leaderboard = user_service.get_leaderboard(limit)
         
         return jsonify({
             'status': 'success',

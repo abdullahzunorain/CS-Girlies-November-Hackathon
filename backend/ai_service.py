@@ -1,5 +1,5 @@
 """
-AI Service Module
+AI Service Module: ai_service.py
 Handles all AI/ML integrations (OpenAI, Google Gemini, etc.)
 Includes RAG System with Vector Database for document processing
 """
@@ -316,7 +316,7 @@ class AIService:
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
-                max_completion_tokens=900,
+                max_completion_tokens=2000,
                 top_p=1,
                 reasoning_effort="medium",
                 stream=False

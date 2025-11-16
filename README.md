@@ -1,4 +1,4 @@
-# 🧠 [Your Project Name] - CS Girlies Hackathon 2025
+# 🧠 Bratz Study - CS Girlies Hackathon 2025
 
 > **Making Learning Cool Again!** 🚀
 
@@ -12,67 +12,68 @@
 - **Live Demo**: [Add Deployed Link]
 - **DevPost Submission**: [Add Link]
 - **Discord**: [CS Girlies Discord](https://discord.gg/csgirlies)
+- **GitBook**:[GitBook link] (to add later)
 
 ---
 
 ## 🎯 Project Overview
 
-**One-line pitch:** [e.g., "An AI-powered study companion that turns boring notes into interactive quizzes and tracks your learning progress"]
+Turn studying into a fun, Y2K-inspired game where AI-generated flashcards, XP, and customizable avatars make learning addictive and effective.
 
 ### The Problem
-[Describe the learning challenge you're solving. Be specific!]
-- Students struggle with X
-- Traditional learning tools don't address Y
-- There's no easy way to Z
+Students often struggle with staying motivated and engaged while studying:  
+- Traditional study methods feel boring and repetitive  
+- It’s hard to track progress and measure improvement  
+- Current learning apps lack gamification and personalization  
 
-### Our Solution
-[Explain your approach in 2-3 sentences]
 
-### Why This Matters
-[Connect to real educational impact - judges care about this!]
+### Our Solution 
+StudyBratz gamifies learning with a Bratz-inspired avatar system:  
+- AI generates flashcards from user-selected topics or uploaded notes  
+- Students earn XP and level up by completing study sessions  
+- Unlock study powers (Pomodoro, Feynman, Active Recall, Spaced Repetition) and customize your avatar and virtual room  
+
+### Why This Matters 
+By combining gamification with proven learning strategies, StudyBratz keeps students engaged, helps them retain knowledge more effectively, and makes learning enjoyable for any subject, from Biology to Languages. 
 
 ---
 
 ## 🏆 Hackathon Track
 
-**Primary Track:** [Choose one]
-- [ ] 🤖 **Automate Learning** - Build smarter study tools with AI
+**Primary Track:** 
 - [ ] 🎮 **Make Learning Fun** - Gamify the learning journey
-- [ ] 🧮 **Build with Wolfram** - Harness computational intelligence
 
-**Bonus Tracks:** [Optional - for extra prizes]
-- [ ] 📚 **Build with GitBook** ($500 prize)
-- [ ] ⚙️ **Built with Cline CLI** ($1,500 prize)
+**Bonus Tracks:** 
+- [ ] 📚 **Build with GitBook** 
+
 
 ---
 
 ## ✨ Key Features
 
-- **Feature 1:** [Brief description]
-- **Feature 2:** [Brief description]
-- **Feature 3:** [Brief description]
-- **Feature 4:** [Brief description]
+- **AI-Generated Flashcards:** Automatically create Q/A flashcards from user-selected topics or uploaded notes.  
+- **Gamified Study Sessions:** Earn XP and level up by completing study sessions, making learning fun and motivating.  
+- **Study Powers & Techniques:** Unlock proven study methods like Pomodoro, Feynman, Active Recall, and Spaced Repetition.  
+
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- [e.g., React, HTML/CSS, Tailwind]
-- [UI framework]
+- HTML/CSS, Tailwind, JavaScript
 
 ### Backend
-- [e.g., Python/Flask, Node.js/Express]
-- [Database: Firebase, MongoDB, etc.]
+- Node.js/Express
+- ChromaDB 
 
 ### AI/ML
 - [e.g., OpenAI GPT-4, Google Gemini]
 - [LangChain, Hugging Face, etc.]
 
 ### Tools & Services
-- [Version Control: Git/GitHub]
-- [Deployment: Vercel, Render, Netlify]
-- [Documentation: GitBook]
+- Version Control: Git/GitHub
+- Documentation: GitBook
 
 ---
 
@@ -137,87 +138,6 @@ Frontend <-> API <-> AI Service <-> Database
 
 ---
 
-## 🎥 Demo Video Script
-
-**[1-5 minutes max]**
-
-### Opening (0:00-0:30)
-- Hook: "What if studying felt like playing your favorite game?"
-- Problem statement
-- Our solution intro
-
-### Demo (0:30-3:30)
-- Show key features in action
-- Walk through user journey
-- Highlight AI/automation
-
-### Impact & Vision (3:30-4:30)
-- Educational impact
-- Future plans
-- Call to action
-
-### Closing (4:30-5:00)
-- Team intro
-- Thank judges
-- End screen with links
-
----
-
-## 🎨 Design & UX Highlights
-
-- **Clean Interface**: [Describe design philosophy]
-- **Accessibility**: [How you made it inclusive]
-- **Mobile-Friendly**: [Responsive design approach]
-
----
-
-## 🧪 Testing
-
-```bash
-# Run tests
-npm test  # Frontend tests
-pytest    # Backend tests
-```
-
----
-
-## 📊 Project Roadmap
-
-### ✅ Completed
-- [x] Core functionality
-- [x] AI integration
-- [x] Basic UI
-
-### 🚧 In Progress
-- [ ] Advanced features
-- [ ] Documentation
-- [ ] Testing
-
-### 🔮 Future Plans
-- [ ] Mobile app
-- [ ] More AI models
-- [ ] Community features
-
----
-
-## 🏅 Judging Criteria Alignment
-
-### Educational Impact (★★★★★)
-[How your project helps students learn better]
-
-### Creativity & Innovation (★★★★★)
-[What makes your project unique]
-
-### Technical Craft (★★★★☆)
-[Technologies used and implementation quality]
-
-### Design & UX (★★★★☆)
-[User experience highlights]
-
-### Community & Accessibility (★★★☆☆)
-[Inclusivity features]
-
----
 
 ## 👥 Team
 
@@ -245,21 +165,8 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 - **Hackathon Page**: [CS Girlies November Hackathon](https://csgirlies-nov-hackathon.devpost.com/)
 - **Discord**: [Join the community](https://discord.gg/csgirlies)
-- **Documentation**: [Full docs in /docs folder]
+- **Documentation**: [GitBook Link]
 
----
-
-## 📝 DevPost Submission Checklist
-
-- [ ] ✅ Demo video (1-5 mins)
-- [ ] ✅ Project description
-- [ ] ✅ Public code repository
-- [ ] ✅ Team info added
-- [ ] ✅ Track selected
-- [ ] ✅ README with setup instructions
-- [ ] ✅ GitBook documentation (for bonus prize)
-
----
 
 **Built with ❤️ for CS Girlies November Hackathon 2025**
 

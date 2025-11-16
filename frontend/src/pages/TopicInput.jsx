@@ -1,78 +1,233 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './TopicInput.css';
-
-/**
- * Topic Input Page
- * User enters what they want to study
- * Then triggers Person 1's flashcard generation API
- */
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import "./TopicInput.css";
+import { getUserProgress } from "../services/api";
 
 const TopicInput = () => {
   const navigate = useNavigate();
-  const [topic, setTopic] = useState('');
+  const location = useLocation();
+  const [topic, setTopic] = useState("");
   const [cardCount, setCardCount] = useState(10);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [studyMode, setStudyMode] = useState("topic"); // 'topic' or 'file'
+  const [userProgress, setUserProgress] = useState(null);
 
-  // Get selected character from localStorage
-  const selectedCharacter = JSON.parse(localStorage.getItem('selectedCharacter') || '{}');
+  const selectedCharacter = JSON.parse(
+    localStorage.getItem("selectedCharacter") || "{}"
+  );
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      const progress = await getUserProgress();
+      setUserProgress(progress);
+    };
+    loadProgress();
+  }, [location]);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Only accept PDFs for now
+    if (file.type !== "application/pdf") {
+      alert("Please upload a PDF file");
+      return;
+    }
+
+    setUploadedFile(file);
+  };
 
   const handleGenerate = async () => {
-    if (!topic.trim()) {
-      alert('Please enter a topic to study!');
+    if (studyMode === "topic" && !topic.trim()) {
+      alert("Please enter a topic to study!");
+      return;
+    }
+
+    if (studyMode === "file" && !uploadedFile) {
+      alert("Please upload a file!");
       return;
     }
 
     setIsGenerating(true);
 
-    // TODO Person 5: Connect to Person 1's API here
-    // For now, simulate API delay
-    setTimeout(() => {
-      // Save topic to localStorage
-      localStorage.setItem('currentTopic', topic);
-      localStorage.setItem('cardCount', cardCount);
-      
-      // Navigate to study session
-      navigate('/study');
-    }, 2000);
+    try {
+      if (studyMode === "file") {
+        const formData = new FormData();
+        formData.append("file", uploadedFile);
+        formData.append("user_id", "demo_user");
+
+        const response = await fetch("http://localhost:5000/api/rag/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          localStorage.setItem("currentTopic", uploadedFile.name);
+          localStorage.setItem("cardCount", cardCount);
+          localStorage.setItem("studyMode", "rag");
+
+          navigate("/technique-select");
+        } else {
+          alert("Failed to process file: " + result.error);
+          setIsGenerating(false);
+        }
+      } else {
+        localStorage.setItem("currentTopic", topic);
+        localStorage.setItem("cardCount", cardCount);
+        localStorage.setItem("studyMode", "topic");
+
+        navigate("/technique-select");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to generate flashcards");
+      setIsGenerating(false);
+    }
   };
 
   return (
     <div className="topic-input">
       <div className="topic-input-container">
+        {/* User Progress Bar */}
+        {userProgress && (
+          <div className="user-progress-header">
+            <span className="level-badge">Level {userProgress.level}</span>
+            <div className="xp-bar">
+              <div
+                className="xp-fill"
+                style={{
+                  width: `${userProgress.progress_to_next_level * 100}%`,
+                }}
+              ></div>
+            </div>
+            <span className="xp-text">
+              {userProgress.xp}/{userProgress.next_level_xp} XP
+            </span>
+          </div>
+        )}
+
         {/* Character greeting */}
         {selectedCharacter.name && (
           <div className="character-greeting">
-            <div 
+            <div
               className="character-mini-avatar"
-              style={{ background: `linear-gradient(135deg, ${selectedCharacter.color} 0%, #764ba2 100%)` }}
+              style={{
+                background: `linear-gradient(135deg, ${selectedCharacter.color} 0%, #764ba2 100%)`,
+              }}
             >
-              👤
+              <img
+                src={selectedCharacter.image}
+                alt={selectedCharacter.name}
+                style={{ width: "100%", borderRadius: "50%" }}
+              />
             </div>
             <p>
-              Hey! I'm <strong>{selectedCharacter.name}</strong>. 
-              What do you want to study today?
+              Hey! I'm <strong>{selectedCharacter.name}</strong>. What do you
+              want to study today?
             </p>
           </div>
         )}
 
         <h1 className="page-title">Ready to Level Up? 📚</h1>
-        <p className="page-subtitle">Tell me what you're studying and I'll generate flashcards!</p>
+        <p className="page-subtitle">Tell me what you're studying!</p>
+
+        {/* Study Mode Selector */}
+        <div className="study-mode-selector">
+          <button
+            className={`mode-button ${studyMode === "topic" ? "active" : ""}`}
+            onClick={() => setStudyMode("topic")}
+          >
+            📝 Enter Topic
+          </button>
+          <button
+            className={`mode-button ${studyMode === "file" ? "active" : ""}`}
+            onClick={() => setStudyMode("file")}
+          >
+            📄 Upload PDF
+          </button>
+        </div>
 
         <div className="input-section">
-          {/* Topic input */}
-          <div className="input-group">
-            <label htmlFor="topic">What are you studying?</label>
-            <input
-              id="topic"
-              type="text"
-              placeholder="e.g., Spanish verbs, Photosynthesis, World War 2..."
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              className="topic-input-field"
-              disabled={isGenerating}
-            />
-          </div>
+          {studyMode === "topic" ? (
+            <>
+              {/* Topic input */}
+              <div className="input-group">
+                <label htmlFor="topic">What are you studying?</label>
+                <input
+                  id="topic"
+                  type="text"
+                  placeholder="e.g., Spanish verbs, Photosynthesis, World War 2..."
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  className="topic-input-field"
+                  disabled={isGenerating}
+                />
+              </div>
+
+              {/* Popular topics suggestions */}
+              <div className="suggestions">
+                <p className="suggestions-label">Popular topics:</p>
+                <div className="suggestion-chips">
+                  {[
+                    "Spanish Vocabulary",
+                    "US History",
+                    "JavaScript Basics",
+                    "SAT Math",
+                  ].map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      className="suggestion-chip"
+                      onClick={() => setTopic(suggestion)}
+                      disabled={isGenerating}
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* File upload */}
+              <div className="input-group">
+                <label htmlFor="file-upload">Upload your study material</label>
+                <div className="file-upload-area">
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileUpload}
+                    disabled={isGenerating}
+                    style={{ display: "none" }}
+                  />
+                  <label htmlFor="file-upload" className="file-upload-button">
+                    {uploadedFile ? (
+                      <>
+                        ✅ {uploadedFile.name}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setUploadedFile(null);
+                          }}
+                          className="remove-file"
+                        >
+                          ✕
+                        </button>
+                      </>
+                    ) : (
+                      <>📤 Click to Upload PDF</>
+                    )}
+                  </label>
+                </div>
+                <p className="file-hint">
+                  Upload a PDF and we'll generate flashcards from it!
+                </p>
+              </div>
+            </>
+          )}
 
           {/* Card count selector */}
           <div className="input-group">
@@ -81,34 +236,13 @@ const TopicInput = () => {
               {[5, 10, 15, 20].map((count) => (
                 <button
                   key={count}
-                  className={`count-option ${cardCount === count ? 'selected' : ''}`}
+                  className={`count-option ${
+                    cardCount === count ? "selected" : ""
+                  }`}
                   onClick={() => setCardCount(count)}
                   disabled={isGenerating}
                 >
                   {count}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Popular topics suggestions */}
-          <div className="suggestions">
-            <p className="suggestions-label">Popular topics:</p>
-            <div className="suggestion-chips">
-              {[
-                'Biology 101',
-                'Spanish Vocabulary',
-                'US History',
-                'JavaScript Basics',
-                'SAT Math'
-              ].map((suggestion) => (
-                <button
-                  key={suggestion}
-                  className="suggestion-chip"
-                  onClick={() => setTopic(suggestion)}
-                  disabled={isGenerating}
-                >
-                  {suggestion}
                 </button>
               ))}
             </div>
@@ -119,7 +253,11 @@ const TopicInput = () => {
         <button
           className="generate-button"
           onClick={handleGenerate}
-          disabled={isGenerating || !topic.trim()}
+          disabled={
+            isGenerating ||
+            (studyMode === "topic" && !topic.trim()) ||
+            (studyMode === "file" && !uploadedFile)
+          }
         >
           {isGenerating ? (
             <>
@@ -130,9 +268,9 @@ const TopicInput = () => {
           )}
         </button>
 
-        <button 
-          className="back-button" 
-          onClick={() => navigate('/character-select')}
+        <button
+          className="back-button"
+          onClick={() => navigate("/character-select")}
           disabled={isGenerating}
         >
           ← Change Character
