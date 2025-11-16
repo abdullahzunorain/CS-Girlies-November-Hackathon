@@ -1,106 +1,127 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './TechniqueSelect.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import "./TechniqueSelect.css";
+import { getUserProgress } from "../services/api";
 
 const TechniqueSelect = () => {
   const navigate = useNavigate();
-  const [selectedTechnique, setSelectedTechnique] = useState('flashcards');
+  const location = useLocation();
+  const [selectedTechnique, setSelectedTechnique] = useState("flashcards");
   const [userLevel, setUserLevel] = useState(1);
-  const selectedCharacter = JSON.parse(localStorage.getItem('selectedCharacter') || '{}');
+  const [userProgress, setUserProgress] = useState(null);
 
   useEffect(() => {
-    // TODO: Fetch real user level from backend
-    const mockLevel = parseInt(localStorage.getItem('userLevel') || '1');
-    setUserLevel(mockLevel);
-  }, []);
+    const loadProgress = async () => {
+      const progress = await getUserProgress();
+      if (progress) {
+        setUserProgress(progress);
+        setUserLevel(progress.level);
+      }
+    };
+    loadProgress();
+  }, [location]);
 
   const techniques = [
     {
-      id: 'flashcards',
-      name: 'Flashcards',
-      icon: '📇',
-      description: 'Classic Q&A cards with flip animation',
+      id: "flashcards",
+      name: "Flashcards",
+      icon: "📇",
+      description: "Classic Q&A cards with flip animation",
       requiredLevel: 1,
-      characterBonus: null, // Available to all
     },
     {
-      id: 'multiple-choice',
-      name: 'Multiple Choice Quiz',
-      icon: '❓',
-      description: 'Test yourself with 4-option questions',
+      id: "multiple-choice",
+      name: "Multiple Choice Quiz",
+      icon: "❓",
+      description: "Test yourself with 4-option questions",
       requiredLevel: 2,
-      characterBonus: 'Sasha', // Sasha (Active Learner) unlocks first
     },
     {
-      id: 'pomodoro',
-      name: 'Pomodoro Mode',
-      icon: '⏱️',
-      description: 'Study in 25-minute focused sprints',
-      requiredLevel: 2,
-      characterBonus: 'Jade', // Jade (Strategic Planner) unlocks first
+      id: "pomodoro",
+      name: "Pomodoro Mode",
+      icon: "⏱️",
+      description: "Study in 25-minute focused sprints",
+      requiredLevel: 3,
     },
     {
-      id: 'spaced-repetition',
-      name: 'Spaced Repetition',
-      icon: '🔁',
-      description: 'Smart algorithm shows weak cards more',
+      id: "spaced-repetition",
+      name: "Spaced Repetition",
+      icon: "🔁",
+      description: "Smart algorithm shows weak cards more",
       requiredLevel: 4,
-      characterBonus: null,
     },
     {
-      id: 'active-recall',
-      name: 'Active Recall',
-      icon: '✍️',
-      description: 'Write answers before revealing',
+      id: "active-recall",
+      name: "Active Recall",
+      icon: "✍️",
+      description: "Write answers before revealing",
       requiredLevel: 5,
-      characterBonus: null,
+    },
+    {
+      id: "study-buddy",
+      name: "Study Buddy Mode",
+      icon: "👥",
+      description: "Challenge a friend to study sessions",
+      requiredLevel: 6,
+    },
+    {
+      id: "mind-mapping",
+      name: "Mind Mapping",
+      icon: "🧠",
+      description: "Visualize connections between concepts",
+      requiredLevel: 7,
+    },
+    {
+      id: "feynman",
+      name: "Feynman Technique",
+      icon: "🎓",
+      description: "Teach concepts in simple terms",
+      requiredLevel: 8,
     },
   ];
 
   const isUnlocked = (technique) => {
-    if (userLevel >= technique.requiredLevel) return true;
-    if (technique.characterBonus === selectedCharacter.name && userLevel >= technique.requiredLevel - 1) {
-      return true; // Character gets 1 level early access
-    }
-    return false;
+    return userLevel >= technique.requiredLevel;
   };
 
   const handleContinue = () => {
-    localStorage.setItem('studyTechnique', selectedTechnique);
-    navigate('/study');
+    localStorage.setItem("studyTechnique", selectedTechnique);
+    navigate("/study");
   };
 
   return (
     <div className="technique-select">
       <div className="technique-select-container">
         <h1 className="page-title">Choose Your Study Technique! ⚡</h1>
-        
-        {selectedCharacter.name && (
-          <p className="character-bonus">
-            As <strong>{selectedCharacter.name}</strong>, you get early access to certain techniques!
-          </p>
+
+        {/* User Progress Display */}
+        {userProgress && (
+          <div className="user-stats-banner">
+            <span className="stat">Level {userProgress.level}</span>
+            <span className="stat">•</span>
+            <span className="stat">
+              {userProgress.xp}/{userProgress.next_level_xp} XP
+            </span>
+          </div>
         )}
+
+        <div className="user-level-display">Level {userLevel}</div>
 
         <div className="techniques-grid">
           {techniques.map((technique) => {
             const unlocked = isUnlocked(technique);
-            const hasBonus = technique.characterBonus === selectedCharacter.name;
 
             return (
               <div
                 key={technique.id}
-                className={`technique-card ${selectedTechnique === technique.id ? 'selected' : ''} ${!unlocked ? 'locked' : ''}`}
+                className={`technique-card ${
+                  selectedTechnique === technique.id ? "selected" : ""
+                } ${!unlocked ? "locked" : ""}`}
                 onClick={() => unlocked && setSelectedTechnique(technique.id)}
               >
                 <div className="technique-icon">{technique.icon}</div>
                 <h3 className="technique-name">{technique.name}</h3>
                 <p className="technique-description">{technique.description}</p>
-
-                {hasBonus && unlocked && (
-                  <div className="character-bonus-badge">
-                    {selectedCharacter.name}'s Specialty! ⭐
-                  </div>
-                )}
 
                 {!unlocked && (
                   <div className="lock-overlay">
@@ -124,7 +145,10 @@ const TechniqueSelect = () => {
           Start Session →
         </button>
 
-        <button className="back-button" onClick={() => navigate('/topic-input')}>
+        <button
+          className="back-button"
+          onClick={() => navigate("/topic-input")}
+        >
           ← Back
         </button>
       </div>

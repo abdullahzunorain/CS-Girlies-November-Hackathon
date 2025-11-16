@@ -24,7 +24,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-# Import AI service
+# Import services
 from ai_service import (
     process_with_ai,
     generate_flashcards,
@@ -34,9 +34,7 @@ from ai_service import (
     query_rag_system,
     get_rag_stats
 )
-
-# In-memory storage for user progress (use database in production)
-user_data = {}
+from user_service import user_service
 
 # XP System Configuration
 XP_CONFIG = {
@@ -51,57 +49,53 @@ XP_CONFIG = {
 LEVEL_THRESHOLDS = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 12000, 17000]
 
 def calculate_level(xp):
-    """Calculate user level based on XP"""
-    for level, threshold in enumerate(LEVEL_THRESHOLDS):
-        if xp < threshold:
-            return level - 1 if level > 0 else 0
-    return len(LEVEL_THRESHOLDS) - 1
+    """Calculate user level based on XP (level 1 starts at 0 XP)"""
+    for level in range(len(LEVEL_THRESHOLDS) - 1, -1, -1):
+        if xp >= LEVEL_THRESHOLDS[level]:
+            return level + 1  # Return 1-indexed level
+    return 1  # Minimum level 1
 
 def get_user_progress(user_id):
     """Get or create user progress data"""
-    if user_id not in user_data:
-        user_data[user_id] = {
-            'xp': 0,
-            'level': 0,
-            'flashcards_reviewed': 0,
-            'quizzes_completed': 0,
-            'documents_processed': 0,
-            'streak': 0,
-            'last_activity': None,
-            'achievements': [],
-            'unlocked_features': ['basic_flashcards']
-        }
-    return user_data[user_id]
+    return user_service.get_user(user_id)
 
 def award_xp(user_id, activity_type, bonus=0):
     """Award XP to user and check for level ups"""
-    user = get_user_progress(user_id)
+    user = user_service.get_user(user_id)
     xp_earned = XP_CONFIG.get(activity_type, 0) + bonus
     
-    user['xp'] += xp_earned
+    # Calculate old and new level
     old_level = user['level']
-    new_level = calculate_level(user['xp'])
+    new_xp = user['xp'] + xp_earned
+    new_level = calculate_level(new_xp)
+    
+    # Update XP
+    user_service.add_xp(user_id, xp_earned)
+    user = user_service.get_user(user_id)  # Refresh
     
     level_up = new_level > old_level
     if level_up:
-        user['level'] = new_level
         # Unlock features based on level
-        if new_level >= 2 and 'quiz_mode' not in user['unlocked_features']:
-            user['unlocked_features'].append('quiz_mode')
-        if new_level >= 3 and 'rag_upload' not in user['unlocked_features']:
-            user['unlocked_features'].append('rag_upload')
-        if new_level >= 5 and 'advanced_analytics' not in user['unlocked_features']:
-            user['unlocked_features'].append('advanced_analytics')
-    
-    user['last_activity'] = datetime.now().isoformat()
+        unlocked_features = user.get('unlocked_features', ['basic_flashcards']).copy()
+        if new_level >= 2 and 'quiz_mode' not in unlocked_features:
+            unlocked_features.append('quiz_mode')
+        if new_level >= 3 and 'rag_upload' not in unlocked_features:
+            unlocked_features.append('rag_upload')
+        if new_level >= 5 and 'advanced_analytics' not in unlocked_features:
+            unlocked_features.append('advanced_analytics')
+        
+        user_service.update_user(user_id, {
+            'level': new_level,
+            'unlocked_features': unlocked_features
+        })
     
     return {
         'xp_earned': xp_earned,
         'total_xp': user['xp'],
-        'level': user['level'],
+        'level': new_level,
         'level_up': level_up,
         'next_level_xp': LEVEL_THRESHOLDS[min(new_level + 1, len(LEVEL_THRESHOLDS) - 1)],
-        'unlocked_features': user['unlocked_features']
+        'unlocked_features': user.get('unlocked_features', ['basic_flashcards'])
     }
 
 @app.route('/')
@@ -584,7 +578,17 @@ def get_progress():
         
         user = get_user_progress(user_id)
         current_level = user['level']
-        next_level_xp = LEVEL_THRESHOLDS[min(current_level + 1, len(LEVEL_THRESHOLDS) - 1)]
+        # Convert 1-indexed level back to 0-indexed for threshold lookup
+        threshold_index = min(current_level - 1, len(LEVEL_THRESHOLDS) - 2)
+        next_threshold_index = min(current_level, len(LEVEL_THRESHOLDS) - 1)
+        current_threshold = LEVEL_THRESHOLDS[threshold_index]
+        next_level_xp = LEVEL_THRESHOLDS[next_threshold_index]
+        
+        # Calculate progress as percentage between current and next threshold
+        if next_level_xp > current_threshold:
+            progress = (user['xp'] - current_threshold) / (next_level_xp - current_threshold) * 100
+        else:
+            progress = 100
         
         return jsonify({
             'status': 'success',
@@ -592,7 +596,7 @@ def get_progress():
             'xp': user['xp'],
             'level': user['level'],
             'next_level_xp': next_level_xp,
-            'progress_to_next_level': (user['xp'] - LEVEL_THRESHOLDS[current_level]) / (next_level_xp - LEVEL_THRESHOLDS[current_level]) * 100 if next_level_xp > LEVEL_THRESHOLDS[current_level] else 100,
+            'progress_to_next_level': progress,
             'flashcards_reviewed': user['flashcards_reviewed'],
             'quizzes_completed': user['quizzes_completed'],
             'documents_processed': user['documents_processed'],
@@ -600,6 +604,80 @@ def get_progress():
             'last_activity': user['last_activity'],
             'achievements': user['achievements'],
             'unlocked_features': user['unlocked_features']
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'status': 'failed'
+        }), 500
+
+
+@app.route('/api/user/character', methods=['POST'])
+def set_character():
+    """
+    Save character selection for user
+    Expects: { "user_id": "user123", "character": { "id": "...", "name": "Yasmin", ... } }
+    Returns: { "status": "success", "character": {...} }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'user_id' not in data or 'character' not in data:
+            return jsonify({
+                'error': 'Missing required fields: user_id, character'
+            }), 400
+        
+        user_id = data['user_id']
+        character = data['character']
+        
+        # Save character to user profile
+        user_service.set_character(user_id, character)
+        
+        return jsonify({
+            'status': 'success',
+            'user_id': user_id,
+            'character': character,
+            'message': f'Character {character.get("name", "Unknown")} selected!'
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'status': 'failed'
+        }), 500
+
+
+@app.route('/api/user/character', methods=['GET'])
+def get_character():
+    """
+    Get user's selected character
+    Query params: ?user_id=user123
+    Returns: { "status": "success", "character": {...} }
+    """
+    try:
+        user_id = request.args.get('user_id', 'default_user')
+        
+        if not user_id:
+            return jsonify({
+                'error': 'Missing user_id parameter'
+            }), 400
+        
+        user = get_user_progress(user_id)
+        character = user.get('character')
+        
+        if not character:
+            return jsonify({
+                'status': 'success',
+                'user_id': user_id,
+                'character': None,
+                'message': 'No character selected yet'
+            }), 200
+        
+        return jsonify({
+            'status': 'success',
+            'user_id': user_id,
+            'character': character
         }), 200
         
     except Exception as e:
@@ -619,24 +697,8 @@ def get_leaderboard():
     try:
         limit = int(request.args.get('limit', 10))
         
-        # Sort users by XP
-        sorted_users = sorted(
-            [(user_id, data) for user_id, data in user_data.items()],
-            key=lambda x: x[1]['xp'],
-            reverse=True
-        )[:limit]
-        
-        leaderboard = [
-            {
-                'rank': idx + 1,
-                'user_id': user_id,
-                'xp': data['xp'],
-                'level': data['level'],
-                'flashcards_reviewed': data['flashcards_reviewed'],
-                'quizzes_completed': data['quizzes_completed']
-            }
-            for idx, (user_id, data) in enumerate(sorted_users)
-        ]
+        # Get leaderboard from user service
+        leaderboard = user_service.get_leaderboard(limit)
         
         return jsonify({
             'status': 'success',

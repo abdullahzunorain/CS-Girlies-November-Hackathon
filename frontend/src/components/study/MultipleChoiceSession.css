@@ -1,0 +1,130 @@
+.multiple-choice-session {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mc-container {
+  max-width: 800px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.mc-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  color: white;
+  font-size: 16px;
+}
+
+.mc-progress {
+  font-weight: bold;
+}
+
+.mc-score {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 15px;
+}
+
+.mc-question {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 30px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+}
+
+.mc-question h2 {
+  color: white;
+  font-size: 24px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.mc-option {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid transparent;
+  border-radius: 15px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.mc-option:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(5px);
+}
+
+.mc-option.selected {
+  border-color: #00ffff;
+  background: rgba(0, 255, 255, 0.2);
+}
+
+.mc-option.correct {
+  border-color: #00ff00;
+  background: rgba(0, 255, 0, 0.2);
+}
+
+.mc-option.incorrect {
+  border-color: #ff0000;
+  background: rgba(255, 0, 0, 0.2);
+}
+
+.mc-option:disabled {
+  cursor: not-allowed;
+}
+
+.option-letter {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.option-text {
+  flex: 1;
+}
+
+.mc-next-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mc-next-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.5);
+}

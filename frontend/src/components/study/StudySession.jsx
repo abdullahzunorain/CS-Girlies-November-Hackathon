@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Flashcard from '../flashcards/Flashcard';
-import './StudySession.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Flashcard from "../flashcards/Flashcard";
+import "./StudySession.css";
+import XPNotification from "../study/XPNotification";
+import { awardXP } from "../../services/api";
 
 /**
  * PERSON 4: Study Session Container
- * 
+ *
  * This wraps the flashcard and shows:
  * - Timer
  * - Progress bar
@@ -21,6 +23,9 @@ const StudySession = ({ flashcards, onSessionComplete }) => {
   const [startTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
   const navigate = useNavigate();
+  const [showXP, setShowXP] = useState(false);
+  const [lastXP, setLastXP] = useState(0);
+
   // Timer - updates every second
   useEffect(() => {
     const timer = setInterval(() => {
@@ -33,20 +38,30 @@ const StudySession = ({ flashcards, onSessionComplete }) => {
   // Guard: if flashcards is empty or undefined, show fallback UI
   if (!flashcards || flashcards.length === 0) {
     return (
-      <div className="study-session empty-session" style={{
-        height: '60vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '16px',
-        color: '#fff'
-      }}>
-        <div style={{ fontSize: '48px' }}>🤔</div>
+      <div
+        className="study-session empty-session"
+        style={{
+          height: "60vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "16px",
+          color: "#fff",
+        }}
+      >
+        <div style={{ fontSize: "48px" }}>🤔</div>
         <div>No flashcards found for this topic.</div>
-        <div style={{ opacity: 0.9 }}>Try generating flashcards from the topic input page.</div>
+        <div style={{ opacity: 0.9 }}>
+          Try generating flashcards from the topic input page.
+        </div>
         <div>
-          <button className="start-button" onClick={() => navigate('/topic-input')}>Back to Topic</button>
+          <button
+            className="start-button"
+            onClick={() => navigate("/topic-input")}
+          >
+            Back to Topic
+          </button>
         </div>
       </div>
     );
@@ -55,30 +70,35 @@ const StudySession = ({ flashcards, onSessionComplete }) => {
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleCorrect = () => {
     const xpGained = 15; // First try correct
-    setSessionXP(prev => prev + xpGained);
-    setCorrectCount(prev => prev + 1);
-    
-    // Show XP notification (you'll enhance this later)
-    showXPNotification(xpGained);
-    
-    // Move to next card after brief delay
-    setTimeout(() => {
-      moveToNextCard();
-    }, 1000);
+    setSessionXP((prev) => prev + xpGained);
+    setCorrectCount((prev) => prev + 1);
+
+    // Award XP to backend
+    awardXP("correct_answer", 15);
+
+    // Show XP notification
+    setLastXP(xpGained);
+    setShowXP(true);
+    setTimeout(() => setShowXP(false), 2000);
+
+    setTimeout(() => moveToNextCard(), 1000);
   };
 
   const handleIncorrect = () => {
     const xpGained = 5; // Still get some XP for trying
-    setSessionXP(prev => prev + xpGained);
-    setReviewCount(prev => prev + 1);
-    
+    setSessionXP((prev) => prev + xpGained);
+    setReviewCount((prev) => prev + 1);
+
+    // Award XP to backend
+    awardXP("correct_answer", 5);
+
     showXPNotification(xpGained);
-    
+
     setTimeout(() => {
       moveToNextCard();
     }, 1000);
@@ -91,7 +111,7 @@ const StudySession = ({ flashcards, onSessionComplete }) => {
 
   const moveToNextCard = () => {
     if (currentCardIndex < flashcards.length - 1) {
-      setCurrentCardIndex(prev => prev + 1);
+      setCurrentCardIndex((prev) => prev + 1);
     } else {
       // Session complete!
       completeSession();
@@ -100,11 +120,10 @@ const StudySession = ({ flashcards, onSessionComplete }) => {
 
   const completeSession = () => {
     const sessionData = {
-      xpEarned: sessionXP + 50, // Bonus for completing
-      correctCount,
-      reviewCount,
+      xp: sessionXP + 50, // Bonus for completing
+      completed: correctCount,
+      total: flashcards.length,
       timeSpent: elapsedTime,
-      totalCards: flashcards.length
     };
     onSessionComplete(sessionData);
   };
@@ -152,6 +171,7 @@ const StudySession = ({ flashcards, onSessionComplete }) => {
 
       {/* XP notifications will appear here */}
       <div id="xp-notification-container"></div>
+      <XPNotification xp={lastXP} show={showXP} />
     </div>
   );
 };
