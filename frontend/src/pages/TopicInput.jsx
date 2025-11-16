@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./TopicInput.css";
 import { getUserProgress } from "../services/api";
-
+import bg3 from "../assets/images/bg3.png";
 const TopicInput = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -89,7 +89,7 @@ const TopicInput = () => {
   };
 
   return (
-    <div className="topic-input">
+    <div className="topic-input" style={{ backgroundImage: `url(${bg3})` }}>
       <div className="topic-input-container">
         {/* User Progress Bar */}
         {userProgress && (

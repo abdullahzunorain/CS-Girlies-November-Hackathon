@@ -32,7 +32,8 @@ from ai_service import (
     analyze_difficulty,
     process_document_for_rag,
     query_rag_system,
-    get_rag_stats
+    get_rag_stats,
+    generate_wrong_answers
 )
 from user_service import user_service
 
@@ -226,6 +227,48 @@ def generate_quiz_endpoint():
             
             user = get_user_progress(user_id)
             user['quizzes_completed'] += 1
+        
+        return jsonify(result), 200
+        
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'status': 'failed'
+        }), 500
+
+@app.route('/api/quiz/generate-distractors', methods=['POST'])
+def generate_distractors_endpoint():
+    """
+    Generate realistic wrong answers for a multiple choice question
+    Expects: { 
+        "question": "What is X?", 
+        "correct_answer": "The answer",
+        "context": "Additional context",
+        "num_distractors": 3
+    }
+    Returns: { "wrong_answers": [...], "status": "success" }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'question' not in data or 'correct_answer' not in data:
+            return jsonify({
+                'error': 'Missing question or correct_answer field'
+            }), 400
+        
+        question = data['question']
+        correct_answer = data['correct_answer']
+        context = data.get('context', '')
+        num_distractors = data.get('num_distractors', 3)
+        
+        # Validate num_distractors
+        if num_distractors < 1 or num_distractors > 5:
+            return jsonify({
+                'error': 'num_distractors must be between 1 and 5'
+            }), 400
+        
+        # Generate wrong answers
+        result = generate_wrong_answers(question, correct_answer, context, num_distractors)
         
         return jsonify(result), 200
         

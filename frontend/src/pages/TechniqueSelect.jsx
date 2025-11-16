@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./TechniqueSelect.css";
 import { getUserProgress } from "../services/api";
+import bg3 from "../assets/images/bg3.png";
 
 const TechniqueSelect = () => {
   const navigate = useNavigate();
@@ -90,7 +91,10 @@ const TechniqueSelect = () => {
   };
 
   return (
-    <div className="technique-select">
+    <div
+      className="technique-select"
+      style={{ backgroundImage: `url(${bg3})` }}
+    >
       <div className="technique-select-container">
         <h1 className="page-title">Choose Your Study Technique! ⚡</h1>
 

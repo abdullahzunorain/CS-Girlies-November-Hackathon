@@ -5,7 +5,7 @@ import char1 from "../assets/images/char1.jpg";
 import char2 from "../assets/images/char2.jpg";
 import char3 from "../assets/images/char3.jpg";
 import char4 from "../assets/images/char4.jpg";
-import bg1 from "../assets/images/bg3.png";
+import bg4 from "../assets/images/bg4.jpg";
 import { saveCharacter } from "../services/api";
 
 /**
@@ -85,7 +85,7 @@ const CharacterSelect = () => {
   return (
     <div
       className="character-select"
-      style={{ backgroundImage: `url(${bg1})` }}
+      style={{ backgroundImage: `url(${bg4})` }}
     >
       <div className="character-select-container">
         <h1 className="page-title">Pick Your Study Persona! ✨</h1>

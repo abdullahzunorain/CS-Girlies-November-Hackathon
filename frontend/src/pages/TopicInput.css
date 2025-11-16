@@ -1,6 +1,8 @@
 .topic-input {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   padding: 40px 20px;
   display: flex;
   justify-content: center;

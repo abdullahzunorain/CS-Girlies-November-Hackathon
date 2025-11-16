@@ -400,6 +400,57 @@ export const startStudySession = async (topic) => {
   }
 };
 
+/**
+ * Generate intelligent wrong answers (distractors) for multiple choice questions
+ */
+export const generateWrongAnswers = async (
+  question,
+  correctAnswer,
+  context = "",
+  numDisractors = 3
+) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/quiz/generate-distractors`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question,
+          correct_answer: correctAnswer,
+          context,
+          num_distractors: numDisractors,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to generate distractors");
+    }
+
+    const data = await response.json();
+
+    if (data.status === "success" && Array.isArray(data.wrong_answers)) {
+      return data.wrong_answers;
+    }
+
+    // Fallback to generic distractors
+    return [
+      `A related but different concept to "${question}"`,
+      `Another possible but incorrect answer`,
+      `A common misconception about this topic`,
+    ].slice(0, numDisractors);
+  } catch (error) {
+    console.error("Error generating wrong answers:", error);
+    // Return generic fallback distractors
+    return [
+      `A related but different concept to "${question}"`,
+      `Another possible but incorrect answer`,
+      `A common misconception about this topic`,
+    ].slice(0, numDisractors);
+  }
+};
+
 export const completeStudySession = async (sessionData) => {
   try {
     console.log("Session completed:", sessionData);
