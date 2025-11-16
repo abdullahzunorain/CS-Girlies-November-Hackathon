@@ -132,8 +132,31 @@ DATABASE_URL=your_database_url
 
 ### Architecture
 ```
-[Diagram or explanation of your system architecture]
-Frontend <-> API <-> AI Service <-> Database
+┌─────────────────────────────────────────────────────────────┐
+│                     Frontend (React)                        │
+│                                                              │
+│  Components: StudySession, MultipleChoice, HomePage, etc.   │
+│  API Calls: generateFlashcards, awardXP, getUserProgress   │
+│  Storage: localStorage (user_id, selectedCharacter)         │
+└─────────────────────────┬──────────────────────────────────┘
+                          │ HTTP/REST
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   Backend (Flask)                           │
+│                                                              │
+│  Endpoints: /api/xp/award, /api/user/progress, etc.        │
+│  Services: user_service, ai_service, rag_service           │
+│  Business Logic: XP calculation, level ups, feature unlocks │
+└─────────────────────────┬──────────────────────────────────┘
+                          │ Persist
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  ChromaDB (Persistent)                      │
+│                                                              │
+│  Collection: users (user_id → user_data)                   │
+│  Format: JSON metadata with user stats and character info  │
+│  Location: ./chroma_db/users/                               │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
