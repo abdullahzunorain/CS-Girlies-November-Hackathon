@@ -75,6 +75,7 @@ By combining gamification with proven learning strategies, StudyBratz keeps stud
 - **Google Gemini 1.5 Flash** - Flashcard generation
 - **Google Gemini Embeddings** - Semantic search
 - **ChromaDB** - Vector similarity search
+- **RAG System** - For contextual retrieval & enhanced answer accuracy
 
 ### Tools & Services
 - Version Control: Git/GitHub
