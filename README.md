@@ -187,7 +187,7 @@ npm start
 
 ---
 
-**RAG System Flow**
+**RAG System Flow**  
 PDF Upload Flow:
 1. User uploads PDF → PyPDF2 extracts text
 2. Text split into 1000-char chunks (200 overlap)
