@@ -1,10 +1,25 @@
 .topic-input {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   padding: 40px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+
+.topic-input::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .topic-input-container {
@@ -16,6 +31,8 @@
   border-radius: 30px;
   border: 3px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 32px rgba(255, 0, 255, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
 .character-greeting {
@@ -52,13 +69,13 @@
 }
 
 .page-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Galindo', cursive;
   font-size: 28px;
   color: white;
   text-align: center;
   text-shadow: 
-    0 0 10px #ff00ff,
-    0 0 20px #00ffff,
+    0 0 10px #ffbff2,
+    0 0 20px #98abe2,
     4px 4px 0 rgba(0, 0, 0, 0.5);
   margin-bottom: 10px;
 }
@@ -82,7 +99,7 @@
 .input-group label {
   display: block;
   color: white;
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Galindo', cursive;
   font-size: 12px;
   margin-bottom: 10px;
   text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
@@ -95,7 +112,7 @@
   border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 15px;
   background: rgba(255, 255, 255, 0.9);
-  font-family: 'Comic Sans MS', cursive;
+  font-family: 'Josefin Sans', sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -126,7 +143,7 @@
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Galindo', cursive;
 }
 
 .count-option:hover:not(:disabled) {
@@ -135,7 +152,7 @@
 }
 
 .count-option.selected {
-  background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%);
+  background: linear-gradient(135deg, #ffbff2 0%, #accf5a 100%);
   border-color: white;
   box-shadow: 0 4px 16px rgba(255, 0, 255, 0.5);
 }
@@ -190,9 +207,9 @@
   padding: 20px;
   font-size: 20px;
   font-weight: bold;
-  font-family: 'Comic Sans MS', cursive;
-  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
-  color: #000;
+  font-family: 'Josefin Sans', sans-serif;
+  background: linear-gradient(135deg, #ffbff2 0%, #accf5a 100%);
+  color: #30488f;
   border: none;
   border-radius: 50px;
   cursor: pointer;
@@ -284,7 +301,7 @@
 }
 
 .mode-button.active {
-  background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%);
+  background: linear-gradient(135deg, #ffbff2 0%, #accf5a 100%);
   border-color: white;
   box-shadow: 0 4px 16px rgba(255, 0, 255, 0.5);
 }

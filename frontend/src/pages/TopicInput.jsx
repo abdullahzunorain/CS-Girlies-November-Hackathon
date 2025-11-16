@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./TopicInput.css";
 import { getUserProgress } from "../services/api";
-
+import bg4 from "../assets/images/bg4.jpg";
 const TopicInput = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -10,7 +10,7 @@ const TopicInput = () => {
   const [cardCount, setCardCount] = useState(10);
   const [isGenerating, setIsGenerating] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [studyMode, setStudyMode] = useState("topic"); // 'topic' or 'file'
+  const [studyMode, setStudyMode] = useState("topic");
   const [userProgress, setUserProgress] = useState(null);
 
   const selectedCharacter = JSON.parse(
@@ -89,26 +89,8 @@ const TopicInput = () => {
   };
 
   return (
-    <div className="topic-input">
+    <div className="topic-input" style={{ backgroundImage: `url(${bg4})` }}>
       <div className="topic-input-container">
-        {/* User Progress Bar */}
-        {userProgress && (
-          <div className="user-progress-header">
-            <span className="level-badge">Level {userProgress.level}</span>
-            <div className="xp-bar">
-              <div
-                className="xp-fill"
-                style={{
-                  width: `${userProgress.progress_to_next_level * 100}%`,
-                }}
-              ></div>
-            </div>
-            <span className="xp-text">
-              {userProgress.xp}/{userProgress.next_level_xp} XP
-            </span>
-          </div>
-        )}
-
         {/* Character greeting */}
         {selectedCharacter.name && (
           <div className="character-greeting">
@@ -132,7 +114,6 @@ const TopicInput = () => {
         )}
 
         <h1 className="page-title">Ready to Level Up? 📚</h1>
-        <p className="page-subtitle">Tell me what you're studying!</p>
 
         {/* Study Mode Selector */}
         <div className="study-mode-selector">
@@ -231,7 +212,7 @@ const TopicInput = () => {
 
           {/* Card count selector */}
           <div className="input-group">
-            <label htmlFor="cardCount">Number of flashcards</label>
+            <label htmlFor="cardCount">Number of rounds</label>
             <div className="card-count-selector">
               {[5, 10, 15, 20].map((count) => (
                 <button
@@ -264,7 +245,7 @@ const TopicInput = () => {
               <span className="spinner">⏳</span> Generating Flashcards...
             </>
           ) : (
-            <>Generate Flashcards! ✨</>
+            <>Choose study technique! ✨</>
           )}
         </button>
 

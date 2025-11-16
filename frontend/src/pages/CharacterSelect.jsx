@@ -5,13 +5,11 @@ import char1 from "../assets/images/char1.jpg";
 import char2 from "../assets/images/char2.jpg";
 import char3 from "../assets/images/char3.jpg";
 import char4 from "../assets/images/char4.jpg";
-import bg1 from "../assets/images/bg3.png";
+import bg4 from "../assets/images/bg4.jpg";
 import { saveCharacter } from "../services/api";
 
 /**
  * Character Selection Page
- * Person 3 will build the full character system
- * This is a placeholder so navigation works
  */
 
 const CharacterSelect = () => {
@@ -19,7 +17,6 @@ const CharacterSelect = () => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Placeholder characters - Person 3 will replace with full system
   const characters = [
     {
       id: "bratz-pink",
@@ -29,6 +26,8 @@ const CharacterSelect = () => {
       image: char2,
       description:
         "Learns best through visual connections and creative thinking",
+      specialties: ["flashcards", "mind-mapping"],
+      bonusMultiplier: 1.5,
     },
     {
       id: "bratz-purple",
@@ -37,6 +36,8 @@ const CharacterSelect = () => {
       color: "#9b59b6",
       image: char1,
       description: "Masters concepts through structured study and organization",
+      specialties: ["pomodoro", "spaced-repetition"],
+      bonusMultiplier: 1.5,
     },
     {
       id: "bratz-blue",
@@ -45,6 +46,8 @@ const CharacterSelect = () => {
       color: "#3498db",
       image: char3,
       description: "Thrives on practice problems and hands-on experimentation",
+      specialties: ["multiple-choice", "active-recall"],
+      bonusMultiplier: 1.5,
     },
     {
       id: "bratz-orange",
@@ -53,6 +56,8 @@ const CharacterSelect = () => {
       color: "#e67e22",
       image: char4,
       description: "Best at learning through discussion and teaching others",
+      specialties: ["feynman", "study-buddy"],
+      bonusMultiplier: 1.5,
     },
   ];
 
@@ -85,7 +90,7 @@ const CharacterSelect = () => {
   return (
     <div
       className="character-select"
-      style={{ backgroundImage: `url(${bg1})` }}
+      style={{ backgroundImage: `url(${bg4})` }}
     >
       <div className="character-select-container">
         <h1 className="page-title">Pick Your Study Persona! ✨</h1>
@@ -125,7 +130,16 @@ const CharacterSelect = () => {
               <h3 className="character-name">{character.name}</h3>
               <p className="character-style">{character.style}</p>
               <p className="character-description">{character.description}</p>
-
+              <div className="character-specialties">
+                <p className="specialties-label">Specialties:</p>
+                <div className="specialty-tags">
+                  {character.specialties.map((spec) => (
+                    <span key={spec} className="specialty-tag">
+                      {spec.replace("-", " ")}
+                    </span>
+                  ))}
+                </div>
+              </div>
               {selectedCharacter?.id === character.id && (
                 <div className="selected-badge">Selected ✓</div>
               )}

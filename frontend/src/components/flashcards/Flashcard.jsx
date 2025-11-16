@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import './Flashcard.css';
+import React, { useState, useEffect } from "react";
+import "./Flashcard.css";
 
-/**
- * PERSON 4: Basic Flashcard Component
- * 
- * Features to build:
- * 1. ✅ Friday: Basic flip on click
- * 2. 🔲 Saturday: Smooth animations with framer-motion
- * 3. 🔲 Saturday: Swipe gestures (optional)
- */
-
-const Flashcard = ({ question, answer, onCorrect, onIncorrect, cardNumber, totalCards }) => {
+const Flashcard = ({
+  question,
+  answer,
+  onCorrect,
+  onIncorrect,
+  cardNumber,
+  totalCards,
+}) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
 
@@ -26,7 +24,11 @@ const Flashcard = ({ question, answer, onCorrect, onIncorrect, cardNumber, total
     }
   };
 
-  const handleAnswer = (correct) => {
+  const handleAnswer = (correct, event) => {
+    // Prevent event bubbling to avoid re-flipping the card
+    if (event) {
+      event.stopPropagation();
+    }
     setIsAnswered(true);
     if (correct) {
       onCorrect();
@@ -43,8 +45,8 @@ const Flashcard = ({ question, answer, onCorrect, onIncorrect, cardNumber, total
       </div>
 
       {/* The actual flashcard */}
-      <div 
-        className={`flashcard ${isFlipped ? 'flipped' : ''}`}
+      <div
+        className={`flashcard ${isFlipped ? "flipped" : ""}`}
         onClick={handleFlip}
       >
         <div className="flashcard-front">
@@ -65,16 +67,16 @@ const Flashcard = ({ question, answer, onCorrect, onIncorrect, cardNumber, total
 
       {/* Answer buttons (only show when flipped) */}
       {isFlipped && !isAnswered && (
-        <div className="answer-buttons">
-          <button 
+        <div className="answer-buttons" onClick={(e) => e.stopPropagation()}>
+          <button
             className="btn-incorrect"
-            onClick={() => handleAnswer(false)}
+            onClick={(e) => handleAnswer(false, e)}
           >
             Need to Review 😅
           </button>
-          <button 
+          <button
             className="btn-correct"
-            onClick={() => handleAnswer(true)}
+            onClick={(e) => handleAnswer(true, e)}
           >
             Got It! ⭐
           </button>

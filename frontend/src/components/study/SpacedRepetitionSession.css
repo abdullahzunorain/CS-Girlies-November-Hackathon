@@ -1,0 +1,233 @@
+.spaced-repetition-session {
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sr-container {
+  max-width: 800px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.sr-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 15px 20px;
+  border-radius: 15px;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #00ffff;
+}
+
+.sr-instructions {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.sr-instructions h3 {
+  margin: 0 0 10px 0;
+  font-size: 20px;
+}
+
+.sr-instructions p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.sr-card {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 40px;
+  border-radius: 20px;
+  min-height: 300px;
+}
+
+.question-section h2 {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 30px;
+  line-height: 1.4;
+}
+
+.show-answer-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.show-answer-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.5);
+}
+
+.answer-section {
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(0, 255, 255, 0.2);
+  border-radius: 15px;
+  border: 2px solid #00ffff;
+}
+
+.answer-section h3 {
+  color: #00ffff;
+  margin-bottom: 10px;
+}
+
+.answer-section p {
+  color: white;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.difficulty-buttons {
+  margin-top: 30px;
+}
+
+.difficulty-prompt {
+  color: white;
+  font-size: 16px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.difficulty-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.difficulty-btn {
+  padding: 20px 15px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-subtitle {
+  font-size: 12px;
+  font-weight: normal;
+  opacity: 0.8;
+}
+
+.btn-again {
+  background: rgba(255, 100, 100, 0.8);
+  color: white;
+}
+
+.btn-again:hover {
+  background: rgba(255, 100, 100, 1);
+  transform: translateY(-3px);
+}
+
+.btn-good {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000;
+}
+
+.btn-good:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.5);
+}
+
+.btn-easy {
+  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  color: #000;
+}
+
+.btn-easy:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.5);
+}
+
+.bonus-message {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000;
+  padding: 20px 40px;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 9998;
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.7);
+  animation: bonusFadeIn 3s ease-out;
+  pointer-events: none;
+}
+
+@keyframes bonusFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .sr-container {
+    padding: 20px;
+  }
+
+  .difficulty-options {
+    grid-template-columns: 1fr;
+  }
+
+  .sr-header {
+    flex-direction: column;
+  }
+}

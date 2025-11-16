@@ -44,7 +44,7 @@ const NavMenu = () => {
       {/* Sliding Menu */}
       <div className={`nav-menu ${isOpen ? "open" : ""}`}>
         <div className="nav-menu-header">
-          <h2>Y2K Study RPG</h2>
+          <h2>Bratz Study </h2>
           <button className="nav-close" onClick={toggleMenu}>
             ✕
           </button>

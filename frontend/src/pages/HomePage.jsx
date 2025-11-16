@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./HomePage.css";
-import bg2 from "../assets/images/bg2.jpg";
+import bg4 from "../assets/images/bg4.jpg";
 import title1 from "../assets/images/title1.png";
 import { getUserProgress } from "../services/api";
 
@@ -28,20 +28,10 @@ const HomePage = () => {
   };
 
   return (
-    <div className="homepage" style={{ backgroundImage: `url(${bg2})` }}>
+    <div className="homepage" style={{ backgroundImage: `url(${bg4})` }}>
       <div className="homepage-content">
-        {/* User Progress Bar */}
-        {userProgress && (
-          <div className="user-progress-banner">
-            <span>
-              📊 Level {userProgress.level} • {userProgress.xp}/
-              {userProgress.next_level_xp} XP
-            </span>
-          </div>
-        )}
-
         {/* Main title */}
-        <img src={title1} alt="Y2K Study RPG" className="homepage-title-img" />
+        <img src={title1} alt="Bratz Study " className="homepage-title-img" />
 
         {/* Subtitle */}
         <p className="homepage-subtitle">Level Up Your Brain! 🧠✨</p>

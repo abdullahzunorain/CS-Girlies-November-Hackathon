@@ -400,6 +400,57 @@ export const startStudySession = async (topic) => {
   }
 };
 
+/**
+ * Generate intelligent wrong answers (distractors) for multiple choice questions
+ */
+export const generateWrongAnswers = async (
+  question,
+  correctAnswer,
+  context = "",
+  numDisractors = 3
+) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/quiz/generate-distractors`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question,
+          correct_answer: correctAnswer,
+          context,
+          num_distractors: numDisractors,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to generate distractors");
+    }
+
+    const data = await response.json();
+
+    if (data.status === "success" && Array.isArray(data.wrong_answers)) {
+      return data.wrong_answers;
+    }
+
+    // Fallback to generic distractors
+    return [
+      `A related but different concept to "${question}"`,
+      `Another possible but incorrect answer`,
+      `A common misconception about this topic`,
+    ].slice(0, numDisractors);
+  } catch (error) {
+    console.error("Error generating wrong answers:", error);
+    // Return generic fallback distractors
+    return [
+      `A related but different concept to "${question}"`,
+      `Another possible but incorrect answer`,
+      `A common misconception about this topic`,
+    ].slice(0, numDisractors);
+  }
+};
+
 export const completeStudySession = async (sessionData) => {
   try {
     console.log("Session completed:", sessionData);
@@ -408,5 +459,76 @@ export const completeStudySession = async (sessionData) => {
   } catch (error) {
     console.error("Error completing session:", error);
     return { success: false };
+  }
+};
+/**
+ * Calculate XP with character bonus
+ */
+export const calculateXPWithBonus = (baseXP, techniqueId) => {
+  const selectedCharacter = JSON.parse(
+    localStorage.getItem("selectedCharacter") || "{}"
+  );
+
+  // Check if technique is character's specialty
+  if (selectedCharacter.specialties?.includes(techniqueId)) {
+    const bonusMultiplier = selectedCharacter.bonusMultiplier || 1.5;
+    const totalXP = Math.floor(baseXP * bonusMultiplier);
+    return {
+      totalXP,
+      baseXP,
+      bonus: totalXP - baseXP,
+      hasBonus: true,
+      characterName: selectedCharacter.name,
+    };
+  }
+
+  return {
+    totalXP: baseXP,
+    baseXP,
+    bonus: 0,
+    hasBonus: false,
+  };
+};
+
+/**
+ * Get background image based on study technique
+ * Returns the appropriate character background for each technique
+ */
+export const getCharacterTechniqueBackground = (characterName, technique) => {
+  // Map techniques to character backgrounds (regardless of selected character)
+  const techniqueBackgrounds = {
+    "flashcards": require("../assets/images/yasmin.jpg"),
+    "mind-mapping": require("../assets/images/yasmin.jpg"),
+    "pomodoro": require("../assets/images/jade.jpg"),
+    "spaced-repetition": require("../assets/images/jade.jpg"),
+    "multiple-choice": require("../assets/images/sasha.jpg"),
+    "active-recall": require("../assets/images/sasha.jpg"),
+    "feynman": require("../assets/images/cloe.jpg"),
+    "study-buddy": require("../assets/images/cloe.jpg"),
+  };
+
+  // Return the background for this technique
+  return techniqueBackgrounds[technique] || null;
+};
+/**
+ * Get character-specific background for study techniques
+ */
+export const getCharacterBackground = () => {
+  const selectedCharacter = JSON.parse(
+    localStorage.getItem("selectedCharacter") || "{}"
+  );
+
+  if (!selectedCharacter.name) {
+    return null;
+  }
+
+  try {
+    // Dynamically require the character's background image
+    const characterName = selectedCharacter.name.toLowerCase();
+    const bg = require(`../assets/images/${characterName}.jpg`);
+    return bg;
+  } catch (error) {
+    console.log("Character background not found, using default");
+    return null;
   }
 };

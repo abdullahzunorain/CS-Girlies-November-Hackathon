@@ -71,14 +71,14 @@
 
 /* Main title */
 .homepage-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Galindo', cursive;
   font-size: 48px;
   color: white;
   text-shadow: 
-    0 0 10px #ff00ff,
-    0 0 20px #ff00ff,
-    0 0 30px #00ffff,
-    0 0 40px #00ffff,
+    0 0 10px #ffbff2,
+    0 0 20px #984eb8,
+    0 0 30px #98abe2,
+    0 0 40px #e85e8d,
     4px 4px 0 rgba(0, 0, 0, 0.5);
   margin-bottom: 20px;
   animation: titleGlow 2s ease-in-out infinite;
@@ -98,24 +98,24 @@
 @keyframes titleGlow {
   0%, 100% { 
     text-shadow: 
-      0 0 10px #ff00ff,
-      0 0 20px #ff00ff,
-      0 0 30px #00ffff,
+      0 0 10px #ffbff2,
+      0 0 20px #984eb8,
+      0 0 30px #98abe2,
       4px 4px 0 rgba(0, 0, 0, 0.5);
   }
   50% { 
     text-shadow: 
-      0 0 20px #ff00ff,
-      0 0 30px #ff00ff,
-      0 0 40px #00ffff,
-      0 0 50px #00ffff,
+      0 0 20px #ffbff2,
+      0 0 30px #984eb8,
+      0 0 40px #98abe2,
+      0 0 50px #98abe2,
       4px 4px 0 rgba(0, 0, 0, 0.5);
   }
 }
 
 /* Subtitle */
 .homepage-subtitle {
-  font-family: 'Funkhous', cursive;
+  font-family: 'Galindo', cursive;
   font-size: 28px;
   color: #00ffff;
   text-shadow: 2px 2px #ff00ff, 4px 4px rgba(0, 0, 0, 0.5);
@@ -138,7 +138,7 @@
 
 /* Start button */
 .start-button {
-  background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%);
+  background: linear-gradient(135deg, #ffbff2 0%, #accf5a 100%);
   border: none;
   padding: 20px 60px;
   font-size: 24px;
@@ -206,7 +206,7 @@
   padding: 10px 20px;
   border-radius: 20px;
   color: white;
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Galindo', cursive;
   font-size: 10px;
   text-transform: uppercase;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

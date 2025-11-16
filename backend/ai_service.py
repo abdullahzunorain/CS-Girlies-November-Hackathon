@@ -165,7 +165,7 @@ class AIService:
     
     def __init__(self):
         # Use Groq OSS model as requested
-        self.model = "openai/gpt-oss-20b"
+        self.model = "openai/gpt-oss-120b"
         # Embeddings: Groq does not expose this model for embeddings; using deterministic hash fallback
         self.embedding_model = "deterministic-hash-embedding"
         
@@ -343,6 +343,81 @@ class AIService:
                     'num_cards': num_cards,
                     'note': 'Flashcards returned as text, not parsed JSON'
                 }
+            
+        except Exception as e:
+            return {
+                'status': 'failed',
+                'error': str(e)
+            }
+    
+    def generate_wrong_answers(self, question: str, correct_answer: str, context: str = "", num_distractors: int = 3) -> Dict:
+        """Generate realistic wrong answers (distractors) for multiple choice questions"""
+        try:
+            prompt = f"""Generate exactly {num_distractors} realistic but incorrect answers for this multiple choice question.
+
+            Question: {question}
+            Correct Answer: {correct_answer}
+            Context: {context}
+            
+            The wrong answers should be:
+            1. Plausible but clearly incorrect
+            2. Common misconceptions or related but wrong concepts
+            3. Similar in length and complexity to the correct answer
+            4. NOT obviously wrong at first glance
+            
+            Return ONLY a valid JSON array with this format:
+            [
+              "wrong answer 1",
+              "wrong answer 2",
+              "wrong answer 3"
+            ]
+            
+            IMPORTANT: Return ONLY the JSON array, no other text or explanations."""
+            
+            if not GROQ_AVAILABLE or groq_client is None:
+                return {'status': 'failed', 'error': 'Groq client unavailable'}
+            
+            response = groq_client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are an expert educator creating challenging multiple choice questions. Always respond with valid JSON only."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.8,
+                max_completion_tokens=500,
+                top_p=1,
+                reasoning_effort="medium",
+                stream=False
+            )
+            
+            answers_text = response.choices[0].message.content
+            if answers_text is None:
+                answers_text = ""
+            answers_text = answers_text.strip()
+            
+            # Try to parse JSON
+            try:
+                wrong_answers = json.loads(answers_text)
+                if isinstance(wrong_answers, list) and len(wrong_answers) > 0:
+                    return {
+                        'status': 'success',
+                        'wrong_answers': wrong_answers[:num_distractors],
+                        'num_distractors': len(wrong_answers[:num_distractors])
+                    }
+            except json.JSONDecodeError:
+                pass
+            
+            # Fallback: return generic distractors if parsing fails
+            return {
+                'status': 'success',
+                'wrong_answers': [
+                    f"A common misconception related to {question}",
+                    f"Another possible answer to {question}",
+                    f"A related but incorrect concept"
+                ][:num_distractors],
+                'num_distractors': num_distractors,
+                'note': 'Fallback generic distractors'
+            }
             
         except Exception as e:
             return {
@@ -613,3 +688,7 @@ def get_rag_stats(user_id: str) -> Dict:
         'total_chunks': len(user_data['documents']),
         'documents': list(documents.values())
     }
+
+def generate_wrong_answers(question: str, correct_answer: str, context: str = "", num_distractors: int = 3) -> Dict:
+    """Generate wrong answers wrapper"""
+    return ai_service.generate_wrong_answers(question, correct_answer, context, num_distractors)

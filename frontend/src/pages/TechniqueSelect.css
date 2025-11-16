@@ -1,62 +1,108 @@
 .technique-select {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
   padding: 40px 20px;
   overflow-y: auto;
+}
+
+.technique-select::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Top-right stats box */
+.top-left-stats {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  left: auto;
+  z-index: 50;
+}
+
+.top-left-stats .user-level-display {
+  text-align: center;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+}
+
+.top-left-stats .level-line {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.top-left-stats .xp-line {
+  font-size: 12px;
+  opacity: 0.9;
 }
 
 .technique-select-container {
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .page-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Galindo', cursive;
   font-size: 36px;
   color: white;
   text-align: center;
-  text-shadow: 
-    0 0 10px #ff00ff,
-    0 0 20px #00ffff,
+  text-shadow:
+    0 0 10px var(--color-hotpink),
+    0 0 20px var(--color-blue),
     4px 4px 0 rgba(0, 0, 0, 0.5);
   margin-bottom: 20px;
   animation: titleGlow 2s ease-in-out infinite;
 }
 
 @keyframes titleGlow {
-  0%, 100% { 
-    text-shadow: 
-      0 0 10px #ff00ff,
-      0 0 20px #00ffff,
+  0%, 100% {
+    text-shadow:
+      0 0 10px var(--color-hotpink),
+      0 0 20px var(--color-blue),
       4px 4px 0 rgba(0, 0, 0, 0.5);
   }
-  50% { 
-    text-shadow: 
-      0 0 20px #ff00ff,
-      0 0 30px #00ffff,
-      0 0 40px #ff00ff,
+  50% {
+    text-shadow:
+      0 0 20px var(--color-hotpink),
+      0 0 30px var(--color-blue),
+      0 0 40px var(--color-hotpink),
       4px 4px 0 rgba(0, 0, 0, 0.5);
   }
 }
 
 .character-bonus {
   text-align: center;
-  color: #00ffff;
+  color: var(--color-blue);
   font-size: 16px;
   margin-bottom: 40px;
   text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .character-bonus strong {
-  color: #ff00ff;
+  color: var(--color-hotpink);
 }
 
 /* Techniques grid */
 .techniques-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-  margin-bottom: 40px;
+  gap: 20px;
 }
 
 .technique-card {
@@ -77,14 +123,14 @@
 
 .technique-card:hover:not(.locked) {
   transform: translateY(-8px);
-  box-shadow: 0 8px 24px rgba(255, 0, 255, 0.4);
+  box-shadow: 0 8px 24px rgba(152,78,184,0.28); /* purple glow */
   background: rgba(255, 255, 255, 0.15);
 }
 
 .technique-card.selected {
-  border-color: #00ffff;
+  border-color: var(--color-blue);
   border-width: 4px;
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+  box-shadow: 0 0 30px rgba(152,171,226,0.4);
   transform: translateY(-8px) scale(1.02);
 }
 
@@ -99,8 +145,8 @@
 }
 
 .technique-name {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
+  font-family: 'Galindo', cursive;
+  font-size: 20px;
   color: white;
   margin-bottom: 15px;
   text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
@@ -116,8 +162,8 @@
 
 /* Character bonus badge */
 .character-bonus-badge {
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  color: #000;
+  background: linear-gradient(135deg, var(--color-hotpink) 0%, var(--color-purple) 100%);
+  color: #fff;
   padding: 8px 12px;
   border-radius: 15px;
   font-size: 11px;
@@ -159,7 +205,7 @@
   position: absolute;
   top: 15px;
   right: 15px;
-  background: #00ff00;
+  background: var(--color-green);
   color: #000;
   padding: 5px 12px;
   border-radius: 15px;
@@ -181,7 +227,7 @@
   padding: 15px 50px;
   font-size: 18px;
   font-weight: bold;
-  font-family: 'Comic Sans MS', cursive;
+  font-family: 'Josefin Sans', sans-serif;
   border: none;
   border-radius: 50px;
   cursor: pointer;
@@ -189,9 +235,9 @@
 }
 
 .continue-button {
-  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  background: linear-gradient(135deg, var(--color-green) 0%, var(--color-blue) 100%);
   color: #000;
-  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(152,171,226,0.28);
 }
 
 .continue-button:hover:not(:disabled) {
@@ -242,13 +288,113 @@
 }
 .user-level-display {
   text-align: center;
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  color: #000;
+  background: linear-gradient(135deg, var(--color-hotpink) 0%, var(--color-purple) 100%);
+  color: #fff;
   padding: 10px 30px;
   border-radius: 25px;
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 30px;
   display: inline-block;
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+.character-info-banner {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 15px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.mini-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid white;
+}
+
+.mini-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.technique-card.has-bonus {
+  border: 3px solid var(--color-hotpink);
+  box-shadow: 0 0 20px rgba(232,94,141,0.25);
+}
+
+.bonus-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, var(--color-hotpink) 0%, var(--color-purple) 100%);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.character-info-banner {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 15px 20px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.mini-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  overflow: hidden;
+  border: 3px solid white;
+  flex-shrink: 0;
+}
+
+.mini-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.character-info-banner p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Bonus Badge */
+.technique-card {
+  position: relative;
+}
+
+.technique-card.has-bonus {
+  border: 3px solid #ffd700 !important;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+@keyframes bonusPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  }
 }
