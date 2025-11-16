@@ -1,51 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import StudySession from '../components/study/StudySession';
-import LevelUp from '../components/levelup/LevelUp';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import StudySession from "../components/study/StudySession";
+import MultipleChoiceSession from "../components/study/MultipleChoiceSession";
+import PomodoroSession from "../components/study/PomodoroSession";
+import FeynmanSession from "../components/study/FeynmanSession";
+import SessionSummary from "../components/study/SessionSummary";
+import LevelUp from "../components/levelup/LevelUp";
+import {
+  generateFlashcards,
+  generateFlashcardsFromRAG,
+  getUserProgress,
+} from "../services/api";
 
 const StudyPage = () => {
   const navigate = useNavigate();
   const [flashcards, setFlashcards] = useState([]);
   const [showLevelUp, setShowLevelUp] = useState(false);
-  const [currentLevel, setCurrentLevel] = useState(2);
   const [sessionComplete, setSessionComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [studyTechnique, setStudyTechnique] = useState("flashcards");
+  const [sessionStats, setSessionStats] = useState(null);
+  const [currentLevel, setCurrentLevel] = useState(0);
 
   const mockUnlocks = {
     2: {
       icon: "⏱️",
       name: "Pomodoro Timer",
-      description: "Study in focused 25-minute sprints with breaks!"
+      description: "Study in focused 25-minute sprints with breaks!",
     },
     3: {
       icon: "🔁",
       name: "Spaced Repetition",
-      description: "Cards you struggle with appear more often!"
+      description: "Cards you struggle with appear more often!",
     },
     4: {
       icon: "👥",
       name: "Study Buddy Mode",
-      description: "Challenge friends to study sessions!"
-    }
+      description: "Challenge friends to study sessions!",
+    },
   };
 
   useEffect(() => {
+    const loadUserLevel = async () => {
+      const progress = await getUserProgress();
+      if (progress) {
+        setCurrentLevel(progress.level);
+      }
+    };
+    loadUserLevel();
+  }, []);
+
+  useEffect(() => {
     const loadFlashcards = async () => {
-      const topic = localStorage.getItem('currentTopic');
-      const cardCount = localStorage.getItem('cardCount') || '10';
+      const topic = localStorage.getItem("currentTopic");
+      const cardCount = localStorage.getItem("cardCount") || "10";
+      const studyMode = localStorage.getItem("studyMode");
+      const technique = localStorage.getItem("studyTechnique") || "flashcards";
+
+      setStudyTechnique(technique);
 
       if (!topic) {
-        navigate('/topic-input');
+        navigate("/topic-input");
         return;
       }
 
-      // TODO Person 5: Replace with real API call
-      const mockFlashcards = generateMockFlashcards(topic, parseInt(cardCount));
-      
-      setTimeout(() => {
+      try {
+        let cards;
+
+        if (studyMode === "rag") {
+          cards = await generateFlashcardsFromRAG(
+            "demo_user",
+            parseInt(cardCount)
+          );
+        } else {
+          cards = await generateFlashcards(topic, parseInt(cardCount));
+        }
+
+        const normalized = Array.isArray(cards)
+          ? cards
+          : cards.flashcards || [];
+        setFlashcards(normalized);
+      } catch (err) {
+        console.error("Failed to load flashcards:", err);
+        const mockFlashcards = generateMockFlashcards(
+          topic,
+          parseInt(cardCount)
+        );
         setFlashcards(mockFlashcards);
+      } finally {
         setIsLoading(false);
-      }, 1000);
+      }
     };
 
     loadFlashcards();
@@ -53,70 +97,113 @@ const StudyPage = () => {
 
   const generateMockFlashcards = (topic, count) => {
     const questions = [
-      { question: `What is the main concept of ${topic}?`, answer: "This is a fundamental concept." },
-      { question: `Why is ${topic} important?`, answer: "It forms the foundation." },
-      { question: `How does ${topic} work?`, answer: "Through interconnected processes." },
-      { question: `What are key components of ${topic}?`, answer: "Essential elements." },
-      { question: `When should you use ${topic}?`, answer: "When applying this knowledge." }
+      {
+        question: `What is the main concept of ${topic}?`,
+        answer: "This is a fundamental concept.",
+      },
+      {
+        question: `Why is ${topic} important?`,
+        answer: "It forms the foundation.",
+      },
+      {
+        question: `How does ${topic} work?`,
+        answer: "Through interconnected processes.",
+      },
+      {
+        question: `What are key components of ${topic}?`,
+        answer: "Essential elements.",
+      },
+      {
+        question: `When should you use ${topic}?`,
+        answer: "When applying this knowledge.",
+      },
     ];
 
-    return Array.from({ length: count }, (_, i) => 
-      questions[i % questions.length]
+    return Array.from(
+      { length: count },
+      (_, i) => questions[i % questions.length]
     );
   };
 
-  const handleSessionComplete = (sessionData) => {
+  const handleSessionComplete = (stats) => {
+    setSessionStats({
+      ...stats,
+      technique: studyTechnique,
+    });
     setSessionComplete(true);
-    setTimeout(() => {
-      setCurrentLevel(prev => prev + 1);
-      setShowLevelUp(true);
-    }, 500);
   };
 
   const handleContinue = () => {
     setShowLevelUp(false);
-    navigate('/topic-input');
+    navigate("/topic-input");
   };
 
   if (isLoading) {
     return (
-      <div style={{ 
-        height: '100vh', 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center', 
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
-        fontSize: '24px',
-        fontFamily: 'Press Start 2P',
-        gap: '20px'
-      }}>
-        <div style={{ fontSize: '48px' }}>⏳</div>
-        <div>Generating Flashcards...</div>
+      <div
+        style={{
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          color: "white",
+          fontSize: "24px",
+          fontFamily: "Press Start 2P",
+          gap: "20px",
+        }}
+      >
+        <div style={{ fontSize: "48px" }}>⏳</div>
+        <div>Generating Study Session...</div>
       </div>
     );
   }
 
+  // RENDER DIFFERENT COMPONENTS BASED ON TECHNIQUE
+  const renderStudyMode = () => {
+    switch (studyTechnique) {
+      case "multiple-choice":
+        return (
+          <MultipleChoiceSession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+
+      case "pomodoro":
+        return (
+          <PomodoroSession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+
+      case "feynman":
+        return (
+          <FeynmanSession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+
+      case "flashcards":
+      default:
+        return (
+          <StudySession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+    }
+  };
+
   return (
     <div className="study-page">
       {!sessionComplete ? (
-        <StudySession
-          flashcards={flashcards}
-          onSessionComplete={handleSessionComplete}
-        />
+        renderStudyMode()
       ) : (
-        <div style={{ 
-          height: '100vh', 
-          display: 'flex', 
-          flexDirection: 'column',
-          alignItems: 'center', 
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white'
-        }}>
-          Session Complete! 🎉
-        </div>
+        <SessionSummary stats={sessionStats} />
       )}
 
       {showLevelUp && (

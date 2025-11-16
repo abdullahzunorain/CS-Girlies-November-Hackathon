@@ -1,0 +1,114 @@
+.session-summary {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.summary-container {
+  max-width: 800px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 50px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.summary-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 32px;
+  color: white;
+  margin-bottom: 40px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  animation: titleGlow 2s infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+  50% { text-shadow: 0 0 40px rgba(0, 255, 255, 0.8); }
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 30px 20px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.stat-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: bold;
+  color: #00ffff;
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  color: white;
+  font-size: 14px;
+}
+
+.summary-technique {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 40px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+}
+
+.summary-technique strong {
+  color: #00ffff;
+}
+
+.summary-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.summary-btn {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-continue {
+  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  color: #000;
+}
+
+.btn-technique {
+  background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%);
+  color: white;
+}
+
+.btn-home {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.summary-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.5);
+}
