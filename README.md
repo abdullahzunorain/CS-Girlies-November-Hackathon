@@ -8,8 +8,7 @@
 ## 📌 Quick Links
 
 - **Demo Video**: [Add YouTube/Vimeo Link]
-- **Live Demo**: [Add Deployed Link]
-- **DevPost Submission**: [Add Link]
+- **DevPost Submission**: [[Add Link](https://devpost.com/software/study-bratz)]
 - **Discord**: [CS Girlies Discord](https://discord.gg/csgirlies)
 - **GitBook**:[GitBook link] (to add later)
 
