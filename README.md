@@ -95,29 +95,43 @@ git --version
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/your-project.git
-cd your-project
+git clone https://github.com/yourusername/studybratz.git
+cd studybratz
 ```
 
-2. **Frontend Setup**
-```bash
-cd frontend
-npm install
-npm start
-```
-
-3. **Backend Setup**
+2. **Backend Setup**
 ```bash
 cd backend
 pip install -r requirements.txt
-python app.py
+
+# Create .env file
+cp .env.example .env
 ```
 
-4. **Environment Variables**
-Create a `.env` file in the root:
-```env
-OPENAI_API_KEY=your_api_key_here
-DATABASE_URL=your_database_url
+3. **Frontend Setup**
+```bash
+cd frontend
+npm install
+
+Edit .env file:
+GROQ_API_KEY=your_groq_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
+FLASK_ENV=development
+PORT=5000
+```
+
+4. **Start Development Servers**
+Terminal 1 - Backend:
+```bash
+cd backend
+python app.py
+# Server runs on http://localhost:5000
+```
+Terminal 2 - Frontend:
+```bash
+cd frontend
+npm start
+# App runs on http://localhost:3000
 ```
 
 ---
@@ -125,42 +139,223 @@ DATABASE_URL=your_database_url
 ## 📖 How It Works
 
 ### User Flow
-1. [Step 1: e.g., User uploads study notes]
-2. [Step 2: AI processes and extracts key concepts]
-3. [Step 3: System generates personalized quiz]
-4. [Step 4: User completes quiz and gets feedback]
+1. Choose Character
+   ↓
+2. Input Topic or Upload PDF
+   ↓
+3. AI Generates Flashcards (10-20 cards)
+   ↓
+4. Select Study Technique
+   ↓
+5. Study & Earn XP
+   ↓
+6. Level Up & Unlock Features
+   ↓
+7. View Progress & Compete
+
+---
 
 ### Architecture
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Frontend (React)                        │
-│                                                              │
-│  Components: StudySession, MultipleChoice, HomePage, etc.   │
+┌────────────────────────────────────────────────────────────┐
+│                     Frontend (React)                       │
+│                                                            │
+│  Components: StudySession, MultipleChoice, HomePage, etc.  │
 │  API Calls: generateFlashcards, awardXP, getUserProgress   │
-│  Storage: localStorage (user_id, selectedCharacter)         │
+│  Storage: localStorage (user_id, selectedCharacter)        │
 └─────────────────────────┬──────────────────────────────────┘
                           │ HTTP/REST
                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   Backend (Flask)                           │
-│                                                              │
+┌────────────────────────────────────────────────────────────┐
+│                   Backend (Flask)                          │
+│                                                            │
 │  Endpoints: /api/xp/award, /api/user/progress, etc.        │
 │  Services: user_service, ai_service, rag_service           │
-│  Business Logic: XP calculation, level ups, feature unlocks │
+│  Business Logic: XP calculation, level ups, feature unlocks│
 └─────────────────────────┬──────────────────────────────────┘
                           │ Persist
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                  ChromaDB (Persistent)                      │
-│                                                              │
-│  Collection: users (user_id → user_data)                   │
-│  Format: JSON metadata with user stats and character info  │
+│                                                             │
+│  Collection: users (user_id → user_data)                    │
+│  Format: JSON metadata with user stats and character info   │
 │  Location: ./chroma_db/users/                               │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
+**RAG System Flow**
+PDF Upload Flow:
+1. User uploads PDF → PyPDF2 extracts text
+2. Text split into 1000-char chunks (200 overlap)
+3. Each chunk → Google Gemini embedding (768 dimensions)
+4. Embeddings stored in ChromaDB with metadata
+5. User ID isolation (each user has own collection)
+
+Query Flow:
+1. User asks question
+2. Question → Google Gemini embedding
+3. Cosine similarity search in ChromaDB
+4. Top-K most relevant chunks retrieved
+5. Chunks + question → Groq LLM
+6. Generated answer with source citations
+
+---
+## 🎮 XP & Progression System
+
+### XP Values
+| Activity | Base XP | Description |
+|----------|---------|-------------|
+| Flashcard Review | 10 XP | Complete one flashcard |
+| Correct Answer | 15 XP | Answer correctly first try |
+| Streak Bonus | 5 XP | Maintain daily streak |
+| Quiz Completion | 50 XP | Finish a full quiz |
+| Document Upload | 25 XP + (2 XP × chunks) | Upload and process PDF |
+| Daily Login | 20 XP | First login of the day |
+
+### Level Progression
+| Level | XP Required | Unlocked Features |
+|-------|-------------|-------------------|
+| 1 | 0 | Basic Flashcards |
+| 2 | 100 | Quiz Mode, Multiple Choice |
+| 3 | 250 | RAG Upload, PDF Processing |
+| 4 | 500 | Pomodoro Timer |
+| 5 | 1,000 | Advanced Analytics, Feynman Technique |
+| 6 | 2,000 | Custom Themes |
+| 7 | 3,500 | Spaced Repetition |
+| 8 | 5,500 | Achievement Badges |
+| 9 | 8,000 | Multiplayer Challenges |
+| 10 | 12,000 | Max Level - All Features |
+
+---
+
+## 📡 API Documentation
+
+### Base URL
+```
+http://localhost:5000
+```
+
+### Endpoints
+
+#### 1. Generate Flashcards
+```http
+POST /api/flashcards/generate
+Content-Type: application/json
+
+{
+  "content": "Photosynthesis is the process...",
+  "num_cards": 5,
+  "user_id": "user123"
+}
+
+Response:
+{
+  "status": "success",
+  "flashcards": [
+    {
+      "front": "What is photosynthesis?",
+      "back": "The process by which plants...",
+      "difficulty": "medium",
+      "category": "Biology"
+    }
+  ],
+  "xp_data": {
+    "xp_earned": 16,
+    "total_xp": 116,
+    "level": 2
+  }
+}
+```
+
+#### 2. Upload PDF for RAG
+```http
+POST /api/rag/upload
+Content-Type: multipart/form-data
+
+file: <PDF file>
+user_id: user123
+
+Response:
+{
+  "status": "success",
+  "chunks_processed": 12,
+  "filename": "biology_notes.pdf",
+  "xp_data": {
+    "xp_earned": 49,
+    "level": 3
+  }
+}
+```
+
+#### 3. Query RAG System
+```http
+POST /api/rag/query
+Content-Type: application/json
+
+{
+  "query": "What are the main topics?",
+  "user_id": "user123",
+  "top_k": 3
+}
+
+Response:
+{
+  "status": "success",
+  "answer": "Based on your documents...",
+  "context": "Relevant text from documents...",
+  "sources": [
+    {
+      "filename": "biology_notes.pdf",
+      "page": 3,
+      "similarity": 0.89
+    }
+  ]
+}
+```
+
+#### 4. Award XP
+```http
+POST /api/xp/award
+Content-Type: application/json
+
+{
+  "user_id": "user123",
+  "activity_type": "correct_answer",
+  "bonus": 5
+}
+
+Response:
+{
+  "status": "success",
+  "xp_earned": 20,
+  "total_xp": 250,
+  "level": 3,
+  "level_up": true,
+  "unlocked_features": ["quiz_mode", "rag_upload"]
+}
+```
+
+#### 5. Get User Progress
+```http
+GET /api/user/progress?user_id=user123
+
+Response:
+{
+  "status": "success",
+  "xp": 250,
+  "level": 3,
+  "next_level_xp": 500,
+  "progress_to_next_level": 50.0,
+  "flashcards_reviewed": 45,
+  "quizzes_completed": 5,
+  "unlocked_features": ["basic_flashcards", "quiz_mode", "rag_upload"]
+}
+```
+
+---
 
 ## 👥 Team
 
