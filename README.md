@@ -8,9 +8,9 @@
 ## 📌 Quick Links
 
 - **Demo Video**: [Add YouTube/Vimeo Link](https://youtu.be/8wVd37fJqu4?si=AU0_Ju4L6bVEoutn)
-- **DevPost Submission**: [[DevPost Bratz Study](https://devpost.com/software/study-bratz)]
+- **DevPost Submission**: [DevPost Bratz Study](https://devpost.com/software/study-bratz)
 - **Discord**: [CS Girlies Discord](https://discord.gg/csgirlies)
-- **GitBook**:[GitBook link](https://cshackathon.gitbook.io/studybratz/)
+- **GitBook**: [GitBook link](https://cshackathon.gitbook.io/studybratz/)
 
 ---
 
