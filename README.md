@@ -367,7 +367,7 @@ Response:
 ## 👥 Team
 
 - **[Jo Gurvantamir]** - [all rounder] - [[GitHub](https://github.com/jo-walker)/[LinkedIn](https://www.linkedin.com/in/jo-tamir/)]
-- **[Abdullah]** - [backend] - [GitHub/LinkedIn]
+- **[Abdullah Zunorain]** - [backend] - [[GitHub](https://github.com/abdullahzunorain)/[LinkedIn](linkedin.com/in/abdullahzunorain/)]
 - **[Jackie]** - [backend] - [GitHub/LinkedIn]
 - **[Sylvia]** - [documentation] - [GitHub/LinkedIn]
 - **[Evelyn]** - [ui design] - [GitHub/LinkedIn]
