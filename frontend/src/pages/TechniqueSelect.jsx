@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./TechniqueSelect.css";
+import { getUserProgress } from "../services/api";
 
 const TechniqueSelect = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedTechnique, setSelectedTechnique] = useState("flashcards");
   const [userLevel, setUserLevel] = useState(1);
+  const [userProgress, setUserProgress] = useState(null);
 
   useEffect(() => {
-    // Get user level from localStorage (you'll sync this with backend later)
-    const storedLevel = parseInt(localStorage.getItem("userLevel") || "1");
-    setUserLevel(storedLevel);
-  }, []);
+    const loadProgress = async () => {
+      const progress = await getUserProgress();
+      if (progress) {
+        setUserProgress(progress);
+        setUserLevel(progress.level);
+      }
+    };
+    loadProgress();
+  }, [location]);
 
   const techniques = [
     {
@@ -49,6 +57,27 @@ const TechniqueSelect = () => {
       description: "Write answers before revealing",
       requiredLevel: 5,
     },
+    {
+      id: "study-buddy",
+      name: "Study Buddy Mode",
+      icon: "👥",
+      description: "Challenge a friend to study sessions",
+      requiredLevel: 6,
+    },
+    {
+      id: "mind-mapping",
+      name: "Mind Mapping",
+      icon: "🧠",
+      description: "Visualize connections between concepts",
+      requiredLevel: 7,
+    },
+    {
+      id: "feynman",
+      name: "Feynman Technique",
+      icon: "🎓",
+      description: "Teach concepts in simple terms",
+      requiredLevel: 8,
+    },
   ];
 
   const isUnlocked = (technique) => {
@@ -64,6 +93,17 @@ const TechniqueSelect = () => {
     <div className="technique-select">
       <div className="technique-select-container">
         <h1 className="page-title">Choose Your Study Technique! ⚡</h1>
+
+        {/* User Progress Display */}
+        {userProgress && (
+          <div className="user-stats-banner">
+            <span className="stat">Level {userProgress.level}</span>
+            <span className="stat">•</span>
+            <span className="stat">
+              {userProgress.xp}/{userProgress.next_level_xp} XP
+            </span>
+          </div>
+        )}
 
         <div className="user-level-display">Level {userLevel}</div>
 

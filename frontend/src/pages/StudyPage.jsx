@@ -3,17 +3,24 @@ import { useNavigate } from "react-router-dom";
 import StudySession from "../components/study/StudySession";
 import MultipleChoiceSession from "../components/study/MultipleChoiceSession";
 import PomodoroSession from "../components/study/PomodoroSession";
+import FeynmanSession from "../components/study/FeynmanSession";
+import SessionSummary from "../components/study/SessionSummary";
 import LevelUp from "../components/levelup/LevelUp";
-import { generateFlashcards, generateFlashcardsFromRAG } from "../services/api";
+import {
+  generateFlashcards,
+  generateFlashcardsFromRAG,
+  getUserProgress,
+} from "../services/api";
 
 const StudyPage = () => {
   const navigate = useNavigate();
   const [flashcards, setFlashcards] = useState([]);
   const [showLevelUp, setShowLevelUp] = useState(false);
-  const [currentLevel, setCurrentLevel] = useState(2);
   const [sessionComplete, setSessionComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [studyTechnique, setStudyTechnique] = useState("flashcards");
+  const [sessionStats, setSessionStats] = useState(null);
+  const [currentLevel, setCurrentLevel] = useState(0);
 
   const mockUnlocks = {
     2: {
@@ -32,6 +39,16 @@ const StudyPage = () => {
       description: "Challenge friends to study sessions!",
     },
   };
+
+  useEffect(() => {
+    const loadUserLevel = async () => {
+      const progress = await getUserProgress();
+      if (progress) {
+        setCurrentLevel(progress.level);
+      }
+    };
+    loadUserLevel();
+  }, []);
 
   useEffect(() => {
     const loadFlashcards = async () => {
@@ -108,12 +125,12 @@ const StudyPage = () => {
     );
   };
 
-  const handleSessionComplete = (sessionData) => {
+  const handleSessionComplete = (stats) => {
+    setSessionStats({
+      ...stats,
+      technique: studyTechnique,
+    });
     setSessionComplete(true);
-    setTimeout(() => {
-      setCurrentLevel((prev) => prev + 1);
-      setShowLevelUp(true);
-    }, 500);
   };
 
   const handleContinue = () => {
@@ -162,6 +179,14 @@ const StudyPage = () => {
           />
         );
 
+      case "feynman":
+        return (
+          <FeynmanSession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+
       case "flashcards":
       default:
         return (
@@ -178,19 +203,7 @@ const StudyPage = () => {
       {!sessionComplete ? (
         renderStudyMode()
       ) : (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-            color: "white",
-          }}
-        >
-          Session Complete! 🎉
-        </div>
+        <SessionSummary stats={sessionStats} />
       )}
 
       {showLevelUp && (

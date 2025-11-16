@@ -5,17 +5,21 @@ import CharacterSelect from "./pages/CharacterSelect";
 import TopicInput from "./pages/TopicInput";
 import StudyPage from "./pages/StudyPage";
 import TechniqueSelect from "./pages/TechniqueSelect";
+import NavMenu from "./components/navigation/NavMenu";
 import "./App.css";
 
 function App() {
   return (
     <Router>
       <div className="App">
+        {/* Navigation Menu - Always accessible */}
+        <NavMenu />
+
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/character-select" element={<CharacterSelect />} />
           <Route path="/topic-input" element={<TopicInput />} />
-          <Route path="/technique-select" element={<TechniqueSelect />} /> {}
+          <Route path="/technique-select" element={<TechniqueSelect />} />
           <Route path="/study" element={<StudyPage />} />
         </Routes>
       </div>

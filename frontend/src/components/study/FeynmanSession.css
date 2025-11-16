@@ -1,0 +1,249 @@
+.feynman-session {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feynman-container {
+  max-width: 900px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.feynman-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  color: white;
+  font-size: 16px;
+}
+
+.feynman-progress {
+  font-weight: bold;
+}
+
+.feynman-stats {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 15px;
+}
+
+.feynman-instructions {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.feynman-instructions h3 {
+  margin: 0 0 10px 0;
+  font-size: 20px;
+}
+
+.feynman-instructions p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.feynman-question {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 30px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+}
+
+.feynman-question h2 {
+  color: white;
+  font-size: 24px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Input Section */
+.feynman-input-section {
+  margin-bottom: 30px;
+}
+
+.feynman-textarea {
+  width: 100%;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  font-size: 16px;
+  font-family: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 150px;
+  transition: all 0.3s ease;
+}
+
+.feynman-textarea:focus {
+  outline: none;
+  border-color: #00ffff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.word-count {
+  text-align: right;
+  color: white;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.feynman-reveal-button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.feynman-reveal-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.5);
+}
+
+.feynman-reveal-button:disabled {
+  background: #666;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Comparison Section */
+.feynman-comparison {
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.comparison-section {
+  margin-bottom: 20px;
+}
+
+.comparison-section h3 {
+  color: #00ffff;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.explanation-box {
+  padding: 20px;
+  border-radius: 15px;
+  line-height: 1.6;
+  font-size: 16px;
+  min-height: 100px;
+}
+
+.user-explanation {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.actual-answer {
+  background: rgba(0, 255, 255, 0.2);
+  color: white;
+  border: 2px solid #00ffff;
+}
+
+.comparison-divider {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.comparison-divider span {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+/* Assessment */
+.feynman-assessment {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.feynman-assessment p {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.assessment-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.assessment-btn {
+  flex: 1;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-no {
+  background: rgba(255, 100, 100, 0.8);
+  color: white;
+}
+
+.btn-no:hover {
+  background: rgba(255, 100, 100, 1);
+  transform: translateY(-3px);
+}
+
+.btn-yes {
+  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  color: #000;
+}
+
+.btn-yes:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .feynman-container {
+    padding: 20px;
+  }
+
+  .feynman-question h2 {
+    font-size: 20px;
+  }
+
+  .assessment-buttons {
+    flex-direction: column;
+  }
+}

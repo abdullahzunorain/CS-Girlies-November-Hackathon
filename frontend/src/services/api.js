@@ -195,49 +195,190 @@ export const generateFlashcardsFromRAG = async (
 };
 
 // ==========================================
-// XP System
+// User Management
 // ==========================================
 
-export const awardXP = async (amount, reason = "study") => {
+/**
+ * Get current user ID from localStorage
+ * Creates one if it doesn't exist
+ */
+export const getUserId = () => {
+  let userId = localStorage.getItem("user_id");
+  if (!userId) {
+    userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem("user_id", userId);
+  }
+  return userId;
+};
+
+/**
+ * Save character selection
+ */
+export const saveCharacter = async (character) => {
   try {
-    console.log(`Awarded ${amount} XP for ${reason}`);
-    return { success: true, newTotal: 150 };
+    const userId = getUserId();
+    const response = await fetch(`${API_BASE_URL}/api/user/character`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: userId,
+        character: character,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save character");
+    }
+
+    const data = await response.json();
+
+    // Save to localStorage too
+    localStorage.setItem("selectedCharacter", JSON.stringify(character));
+
+    console.log(`✅ Character ${character.name} selected!`);
+    return data;
+  } catch (error) {
+    console.error("Error saving character:", error);
+    return { success: false };
+  }
+};
+
+/**
+ * Get user's selected character
+ */
+export const getCharacter = async () => {
+  try {
+    const userId = getUserId();
+    const response = await fetch(
+      `${API_BASE_URL}/api/user/character?user_id=${userId}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch character");
+    }
+
+    const data = await response.json();
+    return data.character || null;
+  } catch (error) {
+    console.error("Error fetching character:", error);
+    // Fall back to localStorage
+    const stored = localStorage.getItem("selectedCharacter");
+    return stored ? JSON.parse(stored) : null;
+  }
+};
+
+// ==========================================
+// XP System - REAL API CALLS
+// ==========================================
+
+/**
+ * Award XP for an activity
+ * Valid activity types: flashcard_review, correct_answer, quiz_completion, etc.
+ */
+export const awardXP = async (activityType = "flashcard_review", bonus = 0) => {
+  try {
+    const userId = getUserId();
+    const response = await fetch(`${API_BASE_URL}/api/xp/award`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: userId,
+        activity_type: activityType,
+        bonus: bonus,
+      }),
+    });
+
+    if (!response.ok) {
+      console.warn("Failed to award XP:", response.status);
+      throw new Error("XP award failed");
+    }
+
+    const data = await response.json();
+    console.log(`✅ Awarded ${data.xp_earned} XP! Total: ${data.total_xp}`);
+
+    if (data.level_up) {
+      console.log(`🎉 LEVEL UP! You're now level ${data.level}!`);
+    }
+
+    return data;
   } catch (error) {
     console.error("Error awarding XP:", error);
     return { success: false };
   }
 };
 
-export const getCurrentProgress = async () => {
+/**
+ * Get current user progress
+ */
+export const getUserProgress = async () => {
   try {
-    // Mock data for now
-    return {
-      currentXP: 350,
-      currentLevel: 3,
-      xpToNextLevel: 150,
-      totalXP: 350,
-    };
+    const userId = getUserId();
+    const response = await fetch(
+      `${API_BASE_URL}/api/user/progress?user_id=${userId}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch progress");
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Error fetching progress:", error);
     return null;
   }
 };
 
+/**
+ * Get leaderboard
+ */
+export const getLeaderboard = async (limit = 10) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/leaderboard?limit=${limit}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch leaderboard");
+    }
+
+    const data = await response.json();
+    return data.leaderboard || [];
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error);
+    return [];
+  }
+};
+
+// Legacy functions for backwards compatibility
+export const getCurrentProgress = async () => {
+  const data = await getUserProgress();
+  if (data) {
+    return {
+      currentXP: data.xp,
+      currentLevel: data.level,
+      xpToNextLevel: data.next_level_xp,
+      totalXP: data.xp,
+      progressPercentage: data.progress_to_next_level,
+    };
+  }
+  return null;
+};
+
 export const checkLevelUp = async (currentXP) => {
   try {
-    const levelThresholds = [0, 100, 250, 450, 700, 1000];
-    const currentLevel =
-      levelThresholds.findIndex((threshold) => currentXP < threshold) - 1;
-
-    return {
-      leveledUp: false,
-      newLevel: currentLevel,
-      unlocked: null,
-    };
+    const data = await getUserProgress();
+    if (data) {
+      return {
+        leveledUp: false, // Backend handles this
+        newLevel: data.level,
+        unlocked: data.unlocked_features,
+      };
+    }
   } catch (error) {
     console.error("Error checking level up:", error);
-    return { leveledUp: false };
   }
+  return { leveledUp: false };
 };
 
 // ==========================================

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import "./MultipleChoiceSession.css";
+import { awardXP } from "../../services/api";
 
 const MultipleChoiceSession = ({ flashcards, onSessionComplete }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -8,14 +9,14 @@ const MultipleChoiceSession = ({ flashcards, onSessionComplete }) => {
   const [score, setScore] = useState(0);
   const [sessionXP, setSessionXP] = useState(0);
 
-  if (!flashcards || flashcards.length === 0) {
-    return <div>No questions available</div>;
-  }
-
-  const currentCard = flashcards[currentIndex];
+  // Call hooks first (before any early returns)
+  const currentCard = flashcards?.[currentIndex];
 
   // Generate multiple choice options from the answer
-  const generateOptions = () => {
+  // useMemo ensures options only shuffle once per question (when currentIndex changes)
+  const { options, correctAnswerIndex } = useMemo(() => {
+    if (!currentCard) return { options: [], correctAnswerIndex: -1 };
+
     const correctAnswer = currentCard.answer;
     const distractors = [
       "This is another possible answer",
@@ -27,11 +28,20 @@ const MultipleChoiceSession = ({ flashcards, onSessionComplete }) => {
     const allOptions = [correctAnswer, ...distractors.slice(0, 3)];
 
     // Shuffle
-    return allOptions.sort(() => Math.random() - 0.5);
-  };
+    const shuffledOptions = allOptions.sort(() => Math.random() - 0.5);
+    const correctIndex = shuffledOptions.indexOf(correctAnswer);
 
-  const options = generateOptions();
-  const correctAnswerIndex = options.indexOf(currentCard.answer);
+    return { options: shuffledOptions, correctAnswerIndex: correctIndex };
+  }, [currentCard]);
+
+  // Now check guard conditions after all hooks
+  if (!flashcards || flashcards.length === 0) {
+    return <div>No questions available</div>;
+  }
+
+  if (!currentCard) {
+    return <div>Loading question...</div>;
+  }
 
   const handleAnswerClick = (index) => {
     if (isAnswered) return;
@@ -44,8 +54,12 @@ const MultipleChoiceSession = ({ flashcards, onSessionComplete }) => {
     if (isCorrect) {
       setScore(score + 1);
       setSessionXP(sessionXP + 20);
+      // Award XP to backend for correct answer
+      awardXP("correct_answer", 20);
     } else {
       setSessionXP(sessionXP + 5);
+      // Award XP to backend for attempt
+      awardXP("correct_answer", 5);
     }
   };
 
@@ -56,7 +70,7 @@ const MultipleChoiceSession = ({ flashcards, onSessionComplete }) => {
       setIsAnswered(false);
     } else {
       onSessionComplete({
-        score,
+        completed: score,
         total: flashcards.length,
         xp: sessionXP,
       });

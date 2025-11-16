@@ -1,18 +1,29 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./TopicInput.css";
+import { getUserProgress } from "../services/api";
 
 const TopicInput = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [topic, setTopic] = useState("");
   const [cardCount, setCardCount] = useState(10);
   const [isGenerating, setIsGenerating] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [studyMode, setStudyMode] = useState("topic"); // 'topic' or 'file'
+  const [userProgress, setUserProgress] = useState(null);
 
   const selectedCharacter = JSON.parse(
     localStorage.getItem("selectedCharacter") || "{}"
   );
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      const progress = await getUserProgress();
+      setUserProgress(progress);
+    };
+    loadProgress();
+  }, [location]);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -80,6 +91,24 @@ const TopicInput = () => {
   return (
     <div className="topic-input">
       <div className="topic-input-container">
+        {/* User Progress Bar */}
+        {userProgress && (
+          <div className="user-progress-header">
+            <span className="level-badge">Level {userProgress.level}</span>
+            <div className="xp-bar">
+              <div
+                className="xp-fill"
+                style={{
+                  width: `${userProgress.progress_to_next_level * 100}%`,
+                }}
+              ></div>
+            </div>
+            <span className="xp-text">
+              {userProgress.xp}/{userProgress.next_level_xp} XP
+            </span>
+          </div>
+        )}
+
         {/* Character greeting */}
         {selectedCharacter.name && (
           <div className="character-greeting">
@@ -143,7 +172,6 @@ const TopicInput = () => {
                 <p className="suggestions-label">Popular topics:</p>
                 <div className="suggestion-chips">
                   {[
-                    "Biology 101",
                     "Spanish Vocabulary",
                     "US History",
                     "JavaScript Basics",
