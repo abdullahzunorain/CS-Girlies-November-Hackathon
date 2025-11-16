@@ -59,15 +59,22 @@ By combining gamification with proven learning strategies, StudyBratz keeps stud
 ## 🛠️ Tech Stack
 
 ### Frontend
-- HTML/CSS, Tailwind, JavaScript
+- **React 18** - UI framework
+- **React Router** - Navigation
+- **React Flow** - Mind mapping visualization
+- **CSS3** - Custom styling with animations
 
 ### Backend
-- Node.js/Express
-- ChromaDB 
+- **Flask** - Python web framework
+- **Google Gemini API** - AI text generation
+- **ChromaDB** - Vector database for RAG
+- **LangChain** - Document processing and RAG orchestration
+- **PyPDF2** - PDF text extraction
 
 ### AI/ML
-- [e.g., OpenAI GPT-4, Google Gemini]
-- [LangChain, Hugging Face, etc.]
+- **Google Gemini 1.5 Flash** - Flashcard generation
+- **Google Gemini Embeddings** - Semantic search
+- **ChromaDB** - Vector similarity search
 
 ### Tools & Services
 - Version Control: Git/GitHub
@@ -93,8 +100,8 @@ git --version
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/studybratz.git
-cd studybratz
+git clone [https://github.com/abdullahzunorain/CS-Girlies-November-Hackathon.git](https://github.com/abdullahzunorain/CS-Girlies-November-Hackathon.git)
+cd CS-Girlies-November-Hackathon
 ```
 
 2. **Backend Setup**
@@ -114,6 +121,7 @@ npm install
 Edit .env file:
 GROQ_API_KEY=your_groq_api_key_here
 GOOGLE_API_KEY=your_google_api_key_here
+GEMINI_API_KEY=your_api_key_here
 FLASK_ENV=development
 PORT=5000
 ```
@@ -142,7 +150,7 @@ npm start
    ↓
 2. Input Topic or Upload PDF  
    ↓
-3. AI Generates Flashcards (10-20 cards)  
+3. AI Generates Flashcards (5-20 cards)  
    ↓
 4. Select Study Technique  
    ↓
@@ -358,9 +366,11 @@ Response:
 
 ## 👥 Team
 
-- **[Your Name]** - [Role] - [GitHub/LinkedIn]
-- **[Teammate 2]** - [Role] - [GitHub/LinkedIn]
-- **[Teammate 3]** - [Role] - [GitHub/LinkedIn]
+- **[Jo Gurvantamir]** - [all rounder] - [[GitHub](https://github.com/jo-walker)/[LinkedIn](https://www.linkedin.com/in/jo-tamir/)]
+- **[Abdullah]** - [backend] - [GitHub/LinkedIn]
+- **[Jackie]** - [backend] - [GitHub/LinkedIn]
+- **[Sylvia]** - [documentation] - [GitHub/LinkedIn]
+- **[Evelyn]** - [ui design] - [GitHub/LinkedIn]
 
 ---
 
