@@ -10,7 +10,7 @@
 - **Demo Video**: [Add YouTube/Vimeo Link]
 - **DevPost Submission**: [[DevPost Bratz Study](https://devpost.com/software/study-bratz)]
 - **Discord**: [CS Girlies Discord](https://discord.gg/csgirlies)
-- **GitBook**:[GitBook link] (to add later)
+- **GitBook**:[GitBook link](https://cshackathon.gitbook.io/studybratz/)
 
 ---
 
@@ -369,7 +369,7 @@ Response:
 - **[Jo Gurvantamir]** - [all rounder] - [[GitHub](https://github.com/jo-walker)/[LinkedIn](https://www.linkedin.com/in/jo-tamir/)]
 - **[Abdullah Zunorain]** - [backend] - [[GitHub](https://github.com/abdullahzunorain)/[LinkedIn](linkedin.com/in/abdullahzunorain/)]
 - **[Jackie]** - [backend] - [GitHub/LinkedIn]
-- **[Sylvia]** - [documentation] - [GitHub/LinkedIn]
+- **[Sylvie]** - [documentation] - [[GitHub](https://github.com/ayzaax)/[LinkedIn](https://www.linkedin.com/in/sylviezabetoglu/)]
 - **[Evelyn]** - [ui design] - [GitHub/LinkedIn]
 
 ---
@@ -377,8 +377,6 @@ Response:
 ## 🙏 Acknowledgments
 
 - CS Girlies community for organizing this amazing hackathon
-- [Mentors who helped]
-- [APIs/tools used]
 
 ---
 
