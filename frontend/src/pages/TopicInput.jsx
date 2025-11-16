@@ -91,24 +91,6 @@ const TopicInput = () => {
   return (
     <div className="topic-input" style={{ backgroundImage: `url(${bg3})` }}>
       <div className="topic-input-container">
-        {/* User Progress Bar */}
-        {userProgress && (
-          <div className="user-progress-header">
-            <span className="level-badge">Level {userProgress.level}</span>
-            <div className="xp-bar">
-              <div
-                className="xp-fill"
-                style={{
-                  width: `${userProgress.progress_to_next_level * 100}%`,
-                }}
-              ></div>
-            </div>
-            <span className="xp-text">
-              {userProgress.xp}/{userProgress.next_level_xp} XP
-            </span>
-          </div>
-        )}
-
         {/* Character greeting */}
         {selectedCharacter.name && (
           <div className="character-greeting">

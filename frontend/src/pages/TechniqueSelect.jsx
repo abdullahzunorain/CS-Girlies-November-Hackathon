@@ -136,8 +136,20 @@ const TechniqueSelect = () => {
               <img src={selectedCharacter.image} alt={selectedCharacter.name} />
             </div>
             <p>
-              <strong>{selectedCharacter.name}</strong> earns bonus XP with
-              certain techniques!
+              <strong>{selectedCharacter.name}</strong> earns bonus XP with{" "}
+              {selectedCharacter.specialties &&
+              selectedCharacter.specialties.length > 0 ? (
+                <>
+                  <strong style={{ color: "#ffd700" }}>
+                    {selectedCharacter.specialties
+                      .map((s) => s.replace("-", " "))
+                      .join(" & ")}
+                  </strong>
+                  !
+                </>
+              ) : (
+                "certain techniques!"
+              )}
             </p>
           </div>
         )}

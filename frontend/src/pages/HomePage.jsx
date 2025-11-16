@@ -30,16 +30,6 @@ const HomePage = () => {
   return (
     <div className="homepage" style={{ backgroundImage: `url(${bg4})` }}>
       <div className="homepage-content">
-        {/* User Progress Bar */}
-        {userProgress && (
-          <div className="user-progress-banner">
-            <span>
-              📊 Level {userProgress.level} • {userProgress.xp}/
-              {userProgress.next_level_xp} XP
-            </span>
-          </div>
-        )}
-
         {/* Main title */}
         <img src={title1} alt="Bratz Study " className="homepage-title-img" />
 
