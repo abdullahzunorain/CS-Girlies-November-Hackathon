@@ -390,7 +390,7 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 - **Hackathon Page**: [CS Girlies November Hackathon](https://csgirlies-nov-hackathon.devpost.com/)
 - **Discord**: [Join the community](https://discord.gg/csgirlies)
-- **Documentation**: [GitBook Link]
+- **Documentation**: [GitBook Link](https://cshackathon.gitbook.io/studybratz/)
 
 
 **Built with ❤️ for CS Girlies November Hackathon 2025**
