@@ -62,21 +62,19 @@ By combining gamification with proven learning strategies, StudyBratz keeps stud
 ## 🛠️ Tech Stack
 
 ### Frontend
-- [e.g., React, HTML/CSS, Tailwind]
-- [UI framework]
+- HTML/CSS, Tailwind, JavaScript
 
 ### Backend
-- [e.g., Python/Flask, Node.js/Express]
-- [Database: Firebase, MongoDB, etc.]
+- Node.js/Express
+- ChromaDB 
 
 ### AI/ML
 - [e.g., OpenAI GPT-4, Google Gemini]
 - [LangChain, Hugging Face, etc.]
 
 ### Tools & Services
-- [Version Control: Git/GitHub]
-- [Deployment: Vercel, Render, Netlify]
-- [Documentation: GitBook]
+- Version Control: Git/GitHub
+- Documentation: GitBook
 
 ---
 
