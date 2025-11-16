@@ -165,7 +165,7 @@ class AIService:
     
     def __init__(self):
         # Use Groq OSS model as requested
-        self.model = "openai/gpt-oss-20b"
+        self.model = "openai/gpt-oss-120b"
         # Embeddings: Groq does not expose this model for embeddings; using deterministic hash fallback
         self.embedding_model = "deterministic-hash-embedding"
         

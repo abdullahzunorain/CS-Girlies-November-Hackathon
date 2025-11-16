@@ -461,3 +461,93 @@ export const completeStudySession = async (sessionData) => {
     return { success: false };
   }
 };
+/**
+ * Calculate XP with character bonus
+ */
+export const calculateXPWithBonus = (baseXP, techniqueId) => {
+  const selectedCharacter = JSON.parse(
+    localStorage.getItem("selectedCharacter") || "{}"
+  );
+
+  // Check if technique is character's specialty
+  if (selectedCharacter.specialties?.includes(techniqueId)) {
+    const bonusMultiplier = selectedCharacter.bonusMultiplier || 1.5;
+    const totalXP = Math.floor(baseXP * bonusMultiplier);
+    return {
+      totalXP,
+      baseXP,
+      bonus: totalXP - baseXP,
+      hasBonus: true,
+      characterName: selectedCharacter.name,
+    };
+  }
+
+  return {
+    totalXP: baseXP,
+    baseXP,
+    bonus: 0,
+    hasBonus: false,
+  };
+};
+
+/**
+ * Get character-specific background for study techniques
+ * Shows character background only when using their specialty technique
+ */
+export const getCharacterTechniqueBackground = (characterName, technique) => {
+  // Map character names to their specialties and backgrounds
+  const characterData = {
+    Yasmin: {
+      specialties: ["flashcards", "mind-mapping"],
+      background: require("../assets/images/yasmin.jpg"),
+    },
+    Jade: {
+      specialties: ["pomodoro", "spaced-repetition"],
+      background: require("../assets/images/jade.jpg"),
+    },
+    Sasha: {
+      specialties: ["multiple-choice", "active-recall"],
+      background: require("../assets/images/sasha.jpg"),
+    },
+    Cloe: {
+      specialties: ["feynman", "study-buddy"],
+      background: require("../assets/images/cloe.jpg"),
+    },
+  };
+
+  // Get the character's data
+  const character = characterData[characterName];
+  if (!character) {
+    return null;
+  }
+
+  // Check if the technique is in the character's specialties
+  if (character.specialties.includes(technique)) {
+    return character.background;
+  }
+
+  // If not a specialty, return null (no background)
+  return null;
+};
+/**
+ * Get character-specific background for study techniques
+ */
+export const getCharacterBackground = () => {
+  const selectedCharacter = JSON.parse(
+    localStorage.getItem("selectedCharacter") || "{}"
+  );
+
+  if (!selectedCharacter.name) {
+    return null;
+  }
+
+  try {
+    // Dynamically require the character's background image
+    const characterName = selectedCharacter.name.toLowerCase();
+    const bg = require(`../assets/images/${characterName}.jpg`);
+    return bg;
+  } catch (error) {
+    console.log("Character background not found, using default");
+    return null;
+  }
+};

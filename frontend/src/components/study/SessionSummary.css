@@ -19,7 +19,7 @@
 }
 
 .summary-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Galindo', cursive;
   font-size: 32px;
   color: white;
   margin-bottom: 40px;
@@ -93,12 +93,12 @@
 }
 
 .btn-continue {
-  background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+  background: linear-gradient(135deg, #ffbff2 0%, #984eb8 100%);
   color: #000;
 }
 
 .btn-technique {
-  background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%);
+  background: linear-gradient(135deg, #ffbff2 0%, #98abe2 100%);
   color: white;
 }
 

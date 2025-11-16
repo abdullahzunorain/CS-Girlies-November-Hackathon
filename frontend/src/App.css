@@ -5,8 +5,11 @@
 }
 
 body {
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-family: 'Josefin Sans', sans-serif;
   overflow-x: hidden;
+  /* subtle themed background fallback */
+  background-image: var(--theme-gradient);
+  background-attachment: fixed;
 }
 
 .App {
@@ -19,6 +22,18 @@ button, .character-card, .flashcard {
   -ms-user-select: none;
   user-select: none;
 }
+
+/* Default themed button look; individual components can add modifiers */
+button, .btn, .btn-theme {
+  background: linear-gradient(90deg, var(--color-hotpink), var(--color-purple));
+  color: var(--text-on-accent);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+button:disabled, .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 html {
   scroll-behavior: smooth;

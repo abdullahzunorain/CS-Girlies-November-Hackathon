@@ -1,4 +1,4 @@
-# Y2K Study RPG - Frontend Structure
+# Bratz Study - Frontend Structure
 
 ## 📁 Folder Organization
 

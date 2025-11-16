@@ -6,10 +6,16 @@ import PomodoroSession from "../components/study/PomodoroSession";
 import FeynmanSession from "../components/study/FeynmanSession";
 import SessionSummary from "../components/study/SessionSummary";
 import LevelUp from "../components/levelup/LevelUp";
+import SpacedRepetitionSession from "../components/study/SpacedRepetitionSession";
+import ActiveRecallSession from "../components/study/ActiveRecallSession";
+import StudyBuddySession from "../components/study/StudyBuddySession";
+import MindMappingSession from "../components/study/MindMappingSession";
+
 import {
   generateFlashcards,
   generateFlashcardsFromRAG,
   getUserProgress,
+  getCharacterTechniqueBackground,
 } from "../services/api";
 
 const StudyPage = () => {
@@ -21,6 +27,7 @@ const StudyPage = () => {
   const [studyTechnique, setStudyTechnique] = useState("flashcards");
   const [sessionStats, setSessionStats] = useState(null);
   const [currentLevel, setCurrentLevel] = useState(0);
+  const [characterBg, setCharacterBg] = useState(null);
 
   const mockUnlocks = {
     2: {
@@ -56,8 +63,20 @@ const StudyPage = () => {
       const cardCount = localStorage.getItem("cardCount") || "10";
       const studyMode = localStorage.getItem("studyMode");
       const technique = localStorage.getItem("studyTechnique") || "flashcards";
+      const selectedCharacter = JSON.parse(
+        localStorage.getItem("selectedCharacter") || "{}"
+      );
 
       setStudyTechnique(technique);
+
+      // Load character-specific background
+      if (selectedCharacter.name) {
+        const bg = getCharacterTechniqueBackground(
+          selectedCharacter.name,
+          technique
+        );
+        setCharacterBg(bg);
+      }
 
       if (!topic) {
         navigate("/topic-input");
@@ -160,9 +179,16 @@ const StudyPage = () => {
     );
   }
 
-  // RENDER DIFFERENT COMPONENTS BASED ON TECHNIQUE
   const renderStudyMode = () => {
     switch (studyTechnique) {
+      case "flashcards":
+        return (
+          <StudySession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+
       case "multiple-choice":
         return (
           <MultipleChoiceSession
@@ -187,7 +213,38 @@ const StudyPage = () => {
           />
         );
 
-      case "flashcards":
+      case "spaced-repetition":
+        return (
+          <SpacedRepetitionSession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+
+      case "active-recall":
+        return (
+          <ActiveRecallSession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+
+      case "study-buddy":
+        return (
+          <StudyBuddySession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+
+      case "mind-mapping":
+        return (
+          <MindMappingSession
+            flashcards={flashcards}
+            onSessionComplete={handleSessionComplete}
+          />
+        );
+
       default:
         return (
           <StudySession
@@ -199,7 +256,12 @@ const StudyPage = () => {
   };
 
   return (
-    <div className="study-page">
+    <div
+      className="study-page"
+      style={
+        characterBg ? { backgroundImage: `url(${characterBg})` } : undefined
+      }
+    >
       {!sessionComplete ? (
         renderStudyMode()
       ) : (

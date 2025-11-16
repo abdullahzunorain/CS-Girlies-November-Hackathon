@@ -1,8 +1,9 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Galindo&family=Josefin+Sans:wght@300;400;600;700&display=swap');
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Josefin Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -11,3 +12,29 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Theme variables: main palette for the app */
+:root {
+  --color-pink: #ffbff2;
+  --color-purple: #984eb8;
+  --color-blue: #98abe2;
+  --color-green: #accf5a;
+  --color-hotpink: #e85e8d;
+
+  /* convenience tokens */
+  --theme-gradient: linear-gradient(135deg, var(--color-pink) 0%, var(--color-purple) 40%, var(--color-blue) 70%);
+  --theme-accent: var(--color-hotpink);
+  --theme-success: var(--color-green);
+  --text-on-accent: #fff;
+}
+
+/* Utility helpers using the theme */
+.bg-theme {
+  background-image: var(--theme-gradient) !important;
+}
+.btn-theme {
+  background: linear-gradient(90deg, var(--color-hotpink), var(--color-purple));
+  color: var(--text-on-accent);
+  border: none;
+}
+

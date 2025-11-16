@@ -22,6 +22,10 @@ const TechniqueSelect = () => {
     loadProgress();
   }, [location]);
 
+  const selectedCharacter = JSON.parse(
+    localStorage.getItem("selectedCharacter") || "{}"
+  );
+
   const techniques = [
     {
       id: "flashcards",
@@ -90,26 +94,55 @@ const TechniqueSelect = () => {
     navigate("/study");
   };
 
+  const hasBonus = (techniqueId) => {
+    return selectedCharacter.specialties?.includes(techniqueId);
+  };
+
+  const getBonusText = (techniqueId) => {
+    if (hasBonus(techniqueId)) {
+      return `${selectedCharacter.name}'s Specialty! +50% XP ⭐`;
+    }
+    return null;
+  };
+
   return (
     <div
       className="technique-select"
       style={{ backgroundImage: `url(${bg3})` }}
     >
+      {/* Top-left user stats */}
+      <div className="top-left-stats">
+        <div className="user-level-display">
+          <div className="level-line">Level {userLevel}</div>
+          <div className="xp-line">
+            {userProgress
+              ? `${userProgress.xp}/${userProgress.next_level_xp} XP`
+              : "—/— XP"}
+          </div>
+        </div>
+      </div>
+
       <div className="technique-select-container">
         <h1 className="page-title">Choose Your Study Technique! ⚡</h1>
-
-        {/* User Progress Display */}
-        {userProgress && (
-          <div className="user-stats-banner">
-            <span className="stat">Level {userProgress.level}</span>
-            <span className="stat">•</span>
-            <span className="stat">
-              {userProgress.xp}/{userProgress.next_level_xp} XP
-            </span>
+        {/* Show character info */}
+        {selectedCharacter.name && (
+          <div className="character-info-banner">
+            <div
+              className="mini-avatar"
+              style={{
+                background: `linear-gradient(135deg, ${selectedCharacter.color} 0%, #764ba2 100%)`,
+              }}
+            >
+              <img src={selectedCharacter.image} alt={selectedCharacter.name} />
+            </div>
+            <p>
+              <strong>{selectedCharacter.name}</strong> earns bonus XP with
+              certain techniques!
+            </p>
           </div>
         )}
 
-        <div className="user-level-display">Level {userLevel}</div>
+        {/* user-level-display moved to top-right stats */}
 
         <div className="techniques-grid">
           {techniques.map((technique) => {
@@ -126,7 +159,10 @@ const TechniqueSelect = () => {
                 <div className="technique-icon">{technique.icon}</div>
                 <h3 className="technique-name">{technique.name}</h3>
                 <p className="technique-description">{technique.description}</p>
-
+                {/* Show bonus badge */}
+                {hasBonus(technique.id) && unlocked && (
+                  <div className="bonus-badge">⭐ +50% XP</div>
+                )}
                 {!unlocked && (
                   <div className="lock-overlay">
                     🔒 Unlock at Level {technique.requiredLevel}

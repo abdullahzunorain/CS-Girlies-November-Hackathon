@@ -1,4 +1,4 @@
-# 🎮 Y2K Study RPG - Team Coordination Guide
+# 🎮 Bratz Study - Team Coordination Guide
 
 ## 📦 Project Setup Complete! ✅
 
